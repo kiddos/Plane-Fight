@@ -1,0 +1,27 @@
+body {
+	margin: 0px;
+}
+
+.container {
+	width: 900px;
+	margin: auto;
+}
+
+.titlebar {
+	text-align: center;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	background-color: #BDBDBD;
+}
+
+#canvas {
+	display: block;
+}
+
+.footer {
+	font-size: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #BDBDBD;
+	margin-top: 0px;
+}
