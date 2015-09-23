@@ -2,7 +2,7 @@ var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
 
 var WIDTH = 900;
-var HEIGHT = 660;
+var HEIGHT = 690;
 //var mainbg = "#59DF59";
 var mainbg = "#4A4A4A";
 var shouldDisplayFPS = true;
@@ -20,18 +20,22 @@ var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7,
 // action timeout
 var actionTimeout = [];
 
+// add a lagging effect for button key press actions
+var laggingEffect = 60;
 
 // global images resources
 var bulletImage = new Image();
 bulletImage.src = "./image/bullet.png";
+var buttonTimeout = new Image();
+buttonTimeout.src = "./image/button_timeout.png";
 
 // fields
 var buttonBar = createButtonBar();
 var anim = createAnimation("./image/plane_anim.png",
 		64, 64, 192, 128, 4, 400);
 anim.init();
-// testing
 var player = createPlayer(100, 100, [anim]);
+var enemy = createEnemy(450, 0);
 
 
 function createAnimation(imagePath, sw, sh, iw, ih, num, updateTime) {
@@ -39,10 +43,10 @@ function createAnimation(imagePath, sw, sh, iw, ih, num, updateTime) {
 		image: new Image(),
 		currentImage: 0,
 		updateTime: null,
-		iw: null,
-		ih: null,
 		sw: null,
 		sh: null,
+		iw: null,
+		ih: null,
 		row: null,
 		num: null,
 
@@ -92,7 +96,7 @@ function createButton(x, y, width, height, imagePath, key, callback) {
 		key: null,
 		callback: null,
 		pressedTime: -99999,
-		percent: 0,
+		percent: 1,
 
 		init: function() {
 			if (!this.x) this.x = x;
@@ -146,7 +150,7 @@ function createButton(x, y, width, height, imagePath, key, callback) {
 			if (currentTimeout <= totalTimeout) {
 				this.percent = currentTimeout / totalTimeout;
 			} else {
-				this.percent = 0;
+				this.percent = 1;
 			}
 		},
 
@@ -155,36 +159,82 @@ function createButton(x, y, width, height, imagePath, key, callback) {
 					this.x, this.y,
 					this.width, this.height);
 
-			// TODO
 			// need to draw the gray out area
-			context.fillStyle = "#42424266";
-			context.fillRect(this.x, this.y, this.width,
-					this.height * this.percent);
+			var drawingHeight = this.height * (1 - this.percent);
+			context.drawImage(buttonTimeout,
+					this.x, this.y + buttonBar.iconSize - drawingHeight,
+					this.width, drawingHeight);
 		}
 	};
 }
 
 function createButtonBar() {
 	return {
-		x: null,
-		y: null,
+		padding: 8,
+		iconSize: 64,
+		width: null,
+		height: null,
 		buttons: [],
 
 		init: function() {
+			var totalWidth = this.iconSize * keyBindings.length +
+					this.padding * (keyBindings.length + 1);
+			var startX = (WIDTH - totalWidth) / 2;
+			var startY = HEIGHT - this.iconSize;
+			this.width = totalWidth;
+			this.height = this.iconSize + this.padding;
+
 			for (var i = 0 ; i < keyBindings.length ; i ++) {
+				// TODO
+				// need to fix the callback function call
 				var callback  = function() {
 					console.log("callback");
 				}
-				var button = createButton(i * 70, 630, 70, 30,
+
+				var button = createButton(
+						startX + i * (this.iconSize + this.padding),
+						startY, this.iconSize, this.iconSize,
 						"./image/button.png", keyBindings[i],
 						callback);
+
 				button.init();
 				this.buttons[i] = button;
 			}
 
-			// action timeout
+			// init action timeout
 			for (var i = 0; i < keyBindings.length ; i++) {
-				actionTimeout[keyBindings[i]] = 200;
+				switch(i) {
+				case 0:
+					actionTimeout[keyBindings[i]] = 160;
+					break;
+				case 1:
+					actionTimeout[keyBindings[i]] = 300;
+					break;
+				case 2:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 3:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 4:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 5:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 6:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 7:
+					actionTimeout[keyBindings[i]] = 500;
+					break;
+				case 8:
+					actionTimeout[keyBindings[i]] = 1000;
+					break;
+				case 9:
+					actionTimeout[keyBindings[i]] = 2000;
+					break;
+				}
 			}
 		},
 
@@ -202,15 +252,18 @@ function createButtonBar() {
 	}
 }
 
-function createBullet(x, y) {
+// TODO
+// create different kinds of bullets
+function createBasicBullet(x, y) {
 	return {
 		x: x,
 		y: y,
 		dx: 0,
 		dy: 12,
+		outbound: -20,
 
 		update: function(timestamp) {
-			if (this.y >= -20)
+			if (this.y >= this.outbound)
 				this.y -= this.dy;
 		},
 
@@ -230,6 +283,9 @@ function createPlayer(x, y, animations) {
 		bullets: null,
 		actionTimeout: null,
 		state: null,
+		bullet1X: 17,
+		bulletY: 14,
+		bullet2X: 43,
 
 		init: function() {
 			this.x = x;
@@ -241,27 +297,61 @@ function createPlayer(x, y, animations) {
 		},
 
 		shootBasicBullet: function() {
-			this.bullets.push(createBullet(this.x+17, this.y+14));
-			this.bullets.push(createBullet(this.x+43, this.y+14));
+			this.bullets.push(createBasicBullet(
+					this.x + this.bullet1X, this.y + this.bulletY));
+			this.bullets.push(createBasicBullet(
+					this.x + this.bullet2X, this.y + this.bulletY));
 		},
 
 		update: function(timestamp) {
-			this.animations[0].update(timestamp);
+			// TODO
+			// update different animations
+			var currentAnimation = this.animations[0];
+			switch (this.state) {
+				case "straight":
+					currentAnimation = this.animations[0];
+					break;
+				case "left":
+					currentAnimation = this.animations[0];
+					break;
+				case "right":
+					currentAnimation = this.animations[0];
+					break;
+			}
+			currentAnimation.update(timestamp);
 
+			// update movement
 			if (keyState[KEY_LEFT]) {
-				this.x -= this.dx;
-				this.state = "left";
+				var newX = this.x - this.dx;
+				if (newX >= 0) {
+					this.x = newX;
+					this.state = "left";
+				} else {
+					this.state = "straight";
+				}
 			}
 			if (keyState[KEY_RIGHT]) {
-				this.x += this.dx;
-				this.state = "right";
+				var newX = this.x + this.dx;
+				if (newX + currentAnimation.sw <= WIDTH) {
+					this.x = newX;
+					this.state = "right";
+				} else {
+					this.state = "straight";
+				}
 			}
 			if (keyState[KEY_UP]) {
-				this.y -= this.dy;
+				var newY = this.y - this.dy;
+				if (newY >= 0) {
+					this.y = newY;
+				}
 				this.state = "straight";
 			}
 			if(keyState[KEY_DOWN]) {
-				this.y += this.dy;
+				var newY = this.y + this.dy;
+				if (newY + currentAnimation.sh <=
+					HEIGHT - buttonBar.height - buttonBar.padding) {
+					this.y = newY;
+				}
 				this.state = "straight";
 			}
 
@@ -312,7 +402,16 @@ function createPlayer(x, y, animations) {
 						// should update all other keys timestamp
 						//this.actionTimeout[keyBindings[i]] = timestamp;
 						for (var j = 0 ; j < keyBindings.length ; j ++) {
-							this.actionTimeout[keyBindings[j]] = timestamp;
+							if (i == j) {
+								this.actionTimeout[keyBindings[j]] =
+									timestamp;
+							} else {
+								this.actionTimeout[keyBindings[j]] =
+									timestamp -
+									actionTimeout[keyBindings[j]] +
+									actionTimeout[keyBindings[i]] +
+									laggingEffect;
+							}
 						}
 						//keyState[keyBindings[i]] = false;
 						break;
@@ -339,6 +438,7 @@ function createPlayer(x, y, animations) {
 
 		draw: function() {
 			// TODO
+			// waiting for making new images
 			// draw animation
 			switch (this.state) {
 				case "straight":
@@ -362,6 +462,26 @@ function createPlayer(x, y, animations) {
 	};
 }
 
+function createEnemy(x, y) {
+	return {
+		x: null,
+		y: null,
+
+		init: function() {
+			this.x = x;
+			this.y = y;
+		},
+
+		update: function() {
+			// code ...
+		},
+
+		draw: function() {
+			// code ...
+		}
+	};
+}
+
 function displayFPS(fps) {
 	context.fillStyle = "#FFFFFF";
 	context.fillText("FPS: " + parseFloat(fps).toFixed(2), 730, 15);
@@ -371,7 +491,6 @@ function init() {
 	player.init();
 
 	buttonBar.init();
-	createButtonBar();
 
 	window.addEventListener("keydown", function(e) {
 		//console.log(e.keyCode);
