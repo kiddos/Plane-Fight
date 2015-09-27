@@ -15,25 +15,29 @@ var KEY_7 = 55, KEY_8 = 56, KEY_9 = 57, KEY_0 = 48;
 var KEY_W = 87, KEY_S = 83, KEY_A = 65, KEY_D = 68;
 // rocket initial speed
 var ROCKET1_INIT_SPEED = 0.9;
-var GLOBAL_COOL_DOWN = 600;
+// add a lagging effect for button key press actions
+var laggingEffect = 60;
+
 
 // key states and bindins
 var keyState = [];
-var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6];
+var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8];
 
 // action timeout
 var actionTimeout = [];
 
-// add a lagging effect for button key press actions
-var laggingEffect = 60;
 
 // global images resources
+var buttonTimeout = new Image();
+buttonTimeout.src = "./image/button_timeout.png";
 var bulletImage = new Image();
 bulletImage.src = "./image/bullet.png";
 var rocket1Image = new Image();
 rocket1Image.src = "./image/rocket1.png";
-var buttonTimeout = new Image();
-buttonTimeout.src = "./image/button_timeout.png";
+var rocket2Image = new Image();
+rocket2Image.src = "./image/rocket2.png";
+var laserImage = new Image();
+laserImage.src = "./image/laser.png";
 
 // fields
 var buttonBar = createButtonBar();
@@ -211,22 +215,22 @@ function createButtonBar() {
 			for (var i = 0; i < keyBindings.length ; i++) {
 				switch(i) {
 				case 0:
-					actionTimeout[keyBindings[i]] = 160;
+					actionTimeout[keyBindings[i]] = 90;
 					break;
 				case 1:
 					actionTimeout[keyBindings[i]] = 500;
 					break;
 				case 2:
-					actionTimeout[keyBindings[i]] = 1000;
+					actionTimeout[keyBindings[i]] = 3000;
 					break;
 				case 3:
-					actionTimeout[keyBindings[i]] = 1000;
+					actionTimeout[keyBindings[i]] = 300;
 					break;
 				case 4:
-					actionTimeout[keyBindings[i]] = 500;
+					actionTimeout[keyBindings[i]] = 30000;
 					break;
 				case 5:
-					actionTimeout[keyBindings[i]] = 500;
+					actionTimeout[keyBindings[i]] = 1000;
 					break;
 				case 6:
 					actionTimeout[keyBindings[i]] = 2000;
@@ -327,6 +331,96 @@ function createRocket1(x, y, dx) {
 	};
 }
 
+function createRocket2(x, y) {
+	return {
+		x: x,
+		y: y,
+		dy: -3,
+		ay: 1,
+		maxdy: 30,
+		damage: 10,
+		imageWidth: rocket2Image.width,
+		imageHeight: rocket2Image.height,
+
+		update: function(timestamp) {
+			if (Math.abs(this.dy) <= this.maxdy)
+				this.dy -= this.ay;
+
+			if (this.y >= outbound)
+				this.y += this.dy;
+		},
+
+		draw: function () {
+			context.drawImage(rocket2Image,
+					this.x, this.y);
+		}
+	};
+}
+
+function createRocket3(x, y, dx) {
+	return {
+		x: x,
+		y: y,
+		dx: 6,
+		dy: 6,
+		damage: 30,
+		imageWidth: rocket1Image.width,
+		imageHeight: rocket1Image.height,
+
+		update: function(timestamp) {
+			if (this.x < enemy.x) {
+				this.dx += this.ax;
+				this.dy -= this.ay;
+			} else if (this.x > enemy.x) {
+				this.dx -= this.ax;
+				this.dy -= this.ay;
+			} else {
+				this.dy += this.ay;
+			}
+
+			if (this.y >= outbound)
+				this.y += this.dy;
+			if (this.x >= outbound && this.x <= WIDTH - outbound)
+				this.x += this.dx;
+		},
+
+		draw: function () {
+			// rotate image
+			var theta = Math.atan(-this.dx/this.dy);
+			if (this.dy == 0) theta = 0;
+			context.translate(this.x, this.y);
+			context.translate(this.imageWidth/2, this.imageHeight/2);
+			context.rotate(theta);
+			context.drawImage(rocket1Image,
+					this.imageWidth/2, this.imageHeight/2);
+			context.rotate(-theta);
+			context.translate(-this.imageWidth/2, -this.imageHeight/2);
+			context.translate(-this.x, -this.y);
+		}
+	};
+}
+
+function createLaser(x, y) {
+	return {
+		x: x,
+		y: y,
+		dy: -20,
+		manaReduce: 30,
+		imageWidth: laserImage.width,
+		imageHeight: laserImage.height,
+
+		update: function(timestamp) {
+			if (this.y >= outbound)
+				this.y += this.dy;
+		},
+
+		draw: function () {
+			context.drawImage(laserImage,
+					this.x, this.y);
+		}
+	};
+}
+
 function createPlayer(x, y, animations) {
 	return {
 		x: null,
@@ -336,6 +430,9 @@ function createPlayer(x, y, animations) {
 		animations: null,
 		bullets: null,
 		rockets1: null,
+		rockets2: null,
+		rockets3: null,
+		laser: null,
 		actionTimeout: null,
 		state: null,
 		// action data
@@ -345,20 +442,26 @@ function createPlayer(x, y, animations) {
 		rocket11X: 6,
 		rocket12X: 52,
 		rocket1Y: 26,
+		rocket2X: 27,
+		rocket2Y: 1,
+		laser1X: -1,
+		laser2X: 62,
+		laserY: 38,
 		actionSuccess: false,
+		GLOBAL_COOL_DOWN: 300,
 		// game data
 		hp: 50,
 		mana: 50,
 		maxhp: 100,
 		maxmana: 100,
-		hpBarXPos: WIDTH - 220,
+		hpBarXPos: WIDTH - 160,
 		hpBarYPos: HEIGHT - 60,
-		hpBarLength: 200,
+		hpBarLength: 150,
 		hpBarHeight: 20,
 		hpIncrement: 5,
-		manaBarXPos: WIDTH - 220,
+		manaBarXPos: WIDTH - 160,
 		manaBarYPos: HEIGHT - 30,
-		manaBarLength: 200,
+		manaBarLength: 150,
 		manaBarHeight: 20,
 		manaIncrement: 0.2,
 
@@ -368,6 +471,9 @@ function createPlayer(x, y, animations) {
 			this.animations = animations;
 			this.bullets = [];
 			this.rockets1 = [];
+			this.rockets2 = [];
+			this.rockets3 = [];
+			this.laser = [];
 			this.actionTimeout = [];
 			this.state = "straight";
 		},
@@ -378,6 +484,7 @@ function createPlayer(x, y, animations) {
 						this.x + this.bullet1X, this.y + this.bulletY));
 				this.bullets.push(createBasicBullet(
 						this.x + this.bullet2X, this.y + this.bulletY));
+
 				this.mana -= 1;
 				this.actionSuccess = true;
 			} else {
@@ -393,8 +500,46 @@ function createPlayer(x, y, animations) {
 				this.rockets1.push(createRocket1(
 						this.x + this.rocket12X, this.y + this.rocket1Y,
 						ROCKET1_INIT_SPEED));
+
 				this.mana -= 10;
 				this.actionSuccess = true;
+			} else {
+				this.actionSuccess = false;
+			}
+		},
+
+		shootRocket2: function () {
+			if (this.mana >= 20) {
+				this.rockets2.push(createRocket2(
+						this.x + this.rocket2X, this.y + this.rocket2Y));
+
+				this.actionSuccess = true;
+				this.mana -= 20;
+			} else {
+				this.actionSuccess = false;
+			}
+		},
+
+		shootRocket3: function() {
+			if (this.mana >= 20) {
+
+
+				this.actionSuccess = true;
+				this.mana -= 20;
+			} else {
+				this.actionSuccess = false;
+			}
+		},
+
+		shootLaser: function () {
+			if (this.mana >= 1) {
+				this.laser.push(createLaser(
+						this.x + this.laser1X, this.y + this.laserY));
+				this.laser.push(createLaser(
+						this.x + this.laser2X, this.y + this.laserY));
+
+				this.actionSuccess = true;
+				this.mana -= 1;
 			} else {
 				this.actionSuccess = false;
 			}
@@ -408,6 +553,14 @@ function createPlayer(x, y, animations) {
 			} else {
 				this.actionSuccess = false;
 			}
+		},
+
+		reduceCoolDown: function() {
+			// code ...
+		},
+
+		summonTank: function() {
+			// code ...
 		},
 
 		update: function(timestamp) {
@@ -482,12 +635,15 @@ function createPlayer(x, y, animations) {
 							break;
 						case 2:
 							// action 2
+							this.shootRocket2();
 							break;
 						case 3:
 							// action 3
+							this.shootLaser();
 							break;
 						case 4:
 							// action 4
+							this.shootRocket3();
 							break;
 						case 5:
 							// action 5
@@ -495,15 +651,11 @@ function createPlayer(x, y, animations) {
 							break;
 						case 6:
 							// action 6
+							this.reduceCoolDown();
 							break;
 						case 7:
 							// action 7
-							break;
-						case 8:
-							// action 8
-							break;
-						case 9:
-							// action 9
+							this.summonTank();
 							break;
 						}
 
@@ -515,21 +667,24 @@ function createPlayer(x, y, animations) {
 								if (i == j) {
 									this.actionTimeout[keyBindings[j]] =
 										timestamp;
-								} else {
+								} //else {
 									//this.actionTimeout[keyBindings[j]] =
 										//timestamp -
 										//actionTimeout[keyBindings[j]] +
 										//actionTimeout[keyBindings[i]] +
 										//laggingEffect;
 									// use global cool down
-									this.actionTimeout[keyBindings[j]] =
-										timestamp -
-										actionTimeout[keyBindings[j]] +
-										GLOBAL_COOL_DOWN +
-										laggingEffect;
-								}
+									//var newTimeout = timestamp -
+										//actionTimeout[keyBindings[j]] +
+										//this.GLOBAL_COOL_DOWN +
+										//laggingEffect;
+									//if (this.actionTimeout[keyBindings[j]] >
+										//newTimeout)
+									//if (i != 0 && j != 3)
+										//this.actionTimeout[keyBindings[j]] =
+										//newTimeout;
+								//}
 							}
-							//keyState[keyBindings[i]] = false;
 						}
 						break;
 					} else {
@@ -538,7 +693,7 @@ function createPlayer(x, y, animations) {
 				}
 			}
 
-
+			// update action objects
 			// remove unwanted bullets
 			for (var i = 0; i < this.bullets.length ; i++) {
 				if (this.bullets[i].y <= outbound ||
@@ -546,7 +701,6 @@ function createPlayer(x, y, animations) {
 					this.bullets.splice(i, 1);
 				}
 			}
-
 			// remove unwanted rockets 1
 			for (var i = 0 ; i < this.rockets1.length ; i ++) {
 				if (this.rockets1[i].y <= outbound ||
@@ -556,17 +710,51 @@ function createPlayer(x, y, animations) {
 					this.rockets1.splice(i, 1);
 				}
 			}
+			// remove unwanted rocket 3
+			for (var i = 0; i < this.rockets2.length ; i++) {
+				if (this.rockets2[i].y <= outbound ||
+					this.rockets2[i].y >= HEIGHT) {
+					this.rockets2.splice(i, 1);
+				}
+			}
+			// remove unwanted rockets 2
+			for (var i = 0 ; i < this.rockets3.length ; i ++) {
+				if (this.rockets3[i].y <= outbound ||
+					this.rockets3[i].y >= HEIGHT ||
+					this.rockets3[i].x <= outbound ||
+					this.rockets3[i].x >= WIDTH - outbound) {
+					this.rockets3.splice(i, 1);
+				}
+			}
+			// remove unwanted laser
+			for (var i = 0; i < this.laser.length ; i++) {
+				if (this.laser[i].y <= outbound ||
+					this.laser[i].y >= HEIGHT) {
+					this.laser.splice(i, 1);
+				}
+			}
 
-			//console.log(this.rockets1.length);
+			//console.log(this.rockets2.length);
 
 			// update bullet movement
 			for (var i = 0; i < this.bullets.length ; i++) {
 				this.bullets[i].update(timestamp);
 			}
-
 			// update rocket 1 movement
 			for (var i = 0; i < this.rockets1.length ; i++) {
 				this.rockets1[i].update(timestamp);
+			}
+			// update rocket 2 movement
+			for (var i = 0; i < this.rockets2.length ; i++) {
+				this.rockets2[i].update(timestamp);
+			}
+			// update rocket 3 movement
+			for (var i = 0; i < this.rockets3.length ; i++) {
+				this.rockets3[i].update(timestamp);
+			}
+			// update laser movement
+			for (var i = 0; i < this.laser.length ; i++) {
+				this.laser[i].update(timestamp);
 			}
 
 			// increase mana for every update
@@ -582,11 +770,28 @@ function createPlayer(x, y, animations) {
 					this.bullets[i].draw();
 				}
 			}
-
 			// draw rocket 1
 			for (var i = 0; i < this.rockets1.length ; i++) {
 				if (this.rockets1[i] != null) {
 					this.rockets1[i].draw();
+				}
+			}
+			// draw rocket 2
+			for (var i = 0; i < this.rockets2.length ; i++) {
+				if (this.rockets2[i] != null) {
+					this.rockets2[i].draw();
+				}
+			}
+			// draw rocket 3
+			for (var i = 0; i < this.rockets3.length ; i++) {
+				if (this.rockets3[i] != null) {
+					this.rockets3[i].draw();
+				}
+			}
+			// draw laser
+			for (var i = 0; i < this.laser.length ; i++) {
+				if (this.laser[i] != null) {
+					this.laser[i].draw();
 				}
 			}
 
