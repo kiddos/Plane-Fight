@@ -25,7 +25,35 @@ var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8];
 
 // action timeout
 var actionTimeout = [];
+var originalActionTimeout = [];
+var reducedActionTimeout = [];
 
+actionTimeout[keyBindings[0]] = 90;
+actionTimeout[keyBindings[1]] = 500;
+actionTimeout[keyBindings[2]] = 3000;
+actionTimeout[keyBindings[3]] = 300;
+actionTimeout[keyBindings[4]] = 30000;
+actionTimeout[keyBindings[5]] = 1000;
+actionTimeout[keyBindings[6]] = 2000;
+actionTimeout[keyBindings[7]] = 500;
+
+originalActionTimeout[keyBindings[0]] = 90;
+originalActionTimeout[keyBindings[1]] = 500;
+originalActionTimeout[keyBindings[2]] = 3000;
+originalActionTimeout[keyBindings[3]] = 300;
+originalActionTimeout[keyBindings[4]] = 30000;
+originalActionTimeout[keyBindings[5]] = 1000;
+originalActionTimeout[keyBindings[6]] = 2000;
+originalActionTimeout[keyBindings[7]] = 500;
+
+reducedActionTimeout[keyBindings[0]] = 45;
+reducedActionTimeout[keyBindings[1]] = 250;
+reducedActionTimeout[keyBindings[2]] = 1000;
+reducedActionTimeout[keyBindings[3]] = 100;
+reducedActionTimeout[keyBindings[4]] = 10000;
+reducedActionTimeout[keyBindings[5]] = 500;
+reducedActionTimeout[keyBindings[6]] = 1000;
+reducedActionTimeout[keyBindings[7]] = 200;
 
 // global images resources
 var buttonTimeout = new Image();
@@ -36,8 +64,14 @@ var rocket1Image = new Image();
 rocket1Image.src = "./image/rocket1.png";
 var rocket2Image = new Image();
 rocket2Image.src = "./image/rocket2.png";
+var rocket3Image = new Image();
+rocket3Image.src = "./image/rocket3.png";
 var laserImage = new Image();
 laserImage.src = "./image/laser.png";
+var tankBase = new Image();
+tankBase.src = "./image/tankbase.png";
+var tankTop = new Image();
+tankTop.src = "./image/tanktop.png";
 
 // fields
 var buttonBar = createButtonBar();
@@ -48,6 +82,21 @@ var player = createPlayer(100, 100, [anim]);
 var enemy = createEnemy(450, 0);
 
 
+// action timeout functions
+function reduceActionTimeout() {
+	for (var i = 0; i < keyBindings.length ; i++) {
+		actionTimeout[keyBindings[i]] = reducedActionTimeout[keyBindings[i]];
+	}
+}
+
+function revertActionTimout() {
+	for (var i = 0; i < keyBindings.length ; i++) {
+		actionTimeout[keyBindings[i]] = originalActionTimeout[keyBindings[i]];
+	}
+}
+
+
+// animation object
 function createAnimation(imagePath, sw, sh, iw, ih, num, updateTime) {
 	return {
 		image: new Image(),
@@ -93,6 +142,8 @@ function createAnimation(imagePath, sw, sh, iw, ih, num, updateTime) {
 	};
 }
 
+
+// button object
 function createButton(x, y, width, height, imagePath, key, callback) {
 	return {
 		x: null,
@@ -178,6 +229,8 @@ function createButton(x, y, width, height, imagePath, key, callback) {
 	};
 }
 
+
+// buttonbar object
 function createButtonBar() {
 	return {
 		padding: 8,
@@ -211,41 +264,6 @@ function createButtonBar() {
 				this.buttons[i] = button;
 			}
 
-			// init action timeout
-			for (var i = 0; i < keyBindings.length ; i++) {
-				switch(i) {
-				case 0:
-					actionTimeout[keyBindings[i]] = 90;
-					break;
-				case 1:
-					actionTimeout[keyBindings[i]] = 500;
-					break;
-				case 2:
-					actionTimeout[keyBindings[i]] = 3000;
-					break;
-				case 3:
-					actionTimeout[keyBindings[i]] = 300;
-					break;
-				case 4:
-					actionTimeout[keyBindings[i]] = 30000;
-					break;
-				case 5:
-					actionTimeout[keyBindings[i]] = 1000;
-					break;
-				case 6:
-					actionTimeout[keyBindings[i]] = 2000;
-					break;
-				case 7:
-					actionTimeout[keyBindings[i]] = 500;
-					break;
-				case 8:
-					actionTimeout[keyBindings[i]] = 1000;
-					break;
-				case 9:
-					actionTimeout[keyBindings[i]] = 2000;
-					break;
-				}
-			}
 		},
 
 		update: function(timestamp) {
@@ -262,7 +280,7 @@ function createButtonBar() {
 	}
 }
 
-// TODO
+
 // create different kinds of bullets
 function createBasicBullet(x, y) {
 	return {
@@ -361,41 +379,27 @@ function createRocket3(x, y, dx) {
 	return {
 		x: x,
 		y: y,
-		dx: 6,
-		dy: 6,
+		dx: 4,
+		dy: -6,
 		damage: 30,
-		imageWidth: rocket1Image.width,
-		imageHeight: rocket1Image.height,
+		imageWidth: rocket3Image.width,
+		imageHeight: rocket3Image.height,
 
 		update: function(timestamp) {
-			if (this.x < enemy.x) {
-				this.dx += this.ax;
-				this.dy -= this.ay;
-			} else if (this.x > enemy.x) {
-				this.dx -= this.ax;
-				this.dy -= this.ay;
-			} else {
-				this.dy += this.ay;
+			if (this.x >= outbound && this.x <= WIDTH - outbound) {
+				if (this.x < enemy.x) {
+					this.x += this.dx;
+				} else if (this.x > enemy.x + enemy.width) {
+					this.x -= this.dx;
+				}
 			}
 
 			if (this.y >= outbound)
 				this.y += this.dy;
-			if (this.x >= outbound && this.x <= WIDTH - outbound)
-				this.x += this.dx;
 		},
 
 		draw: function () {
-			// rotate image
-			var theta = Math.atan(-this.dx/this.dy);
-			if (this.dy == 0) theta = 0;
-			context.translate(this.x, this.y);
-			context.translate(this.imageWidth/2, this.imageHeight/2);
-			context.rotate(theta);
-			context.drawImage(rocket1Image,
-					this.imageWidth/2, this.imageHeight/2);
-			context.rotate(-theta);
-			context.translate(-this.imageWidth/2, -this.imageHeight/2);
-			context.translate(-this.x, -this.y);
+			context.drawImage(rocket3Image, this.x, this.y);
 		}
 	};
 }
@@ -417,6 +421,21 @@ function createLaser(x, y) {
 		draw: function () {
 			context.drawImage(laserImage,
 					this.x, this.y);
+		}
+	};
+}
+
+function createTank(x, y) {
+	return {
+		x: x,
+		y: y,
+
+		update: function(timestamp) {
+			// code..
+		},
+
+		draw: function () {
+			// code ...
 		}
 	};
 }
@@ -447,8 +466,12 @@ function createPlayer(x, y, animations) {
 		laser1X: -1,
 		laser2X: 62,
 		laserY: 38,
+		rocket3X: 27,
+		rocket3Y: 1,
 		actionSuccess: false,
 		GLOBAL_COOL_DOWN: 300,
+		reduceTimeout: -20000,
+		reduceChanged: false,
 		// game data
 		hp: 50,
 		mana: 50,
@@ -479,13 +502,14 @@ function createPlayer(x, y, animations) {
 		},
 
 		shootBasicBullet: function() {
-			if (this.mana >= 1) {
+			var manaCost = 1
+			if (this.mana >= manaCost) {
 				this.bullets.push(createBasicBullet(
 						this.x + this.bullet1X, this.y + this.bulletY));
 				this.bullets.push(createBasicBullet(
 						this.x + this.bullet2X, this.y + this.bulletY));
 
-				this.mana -= 1;
+				this.mana -= manaCost;
 				this.actionSuccess = true;
 			} else {
 				this.actionSuccess = false;
@@ -493,7 +517,8 @@ function createPlayer(x, y, animations) {
 		},
 
 		shootRocket1: function() {
-			if (this.mana >= 10) {
+			var manaCost = 10;
+			if (this.mana >= manaCost) {
 				this.rockets1.push(createRocket1(
 						this.x + this.rocket11X, this.y + this.rocket1Y,
 						-ROCKET1_INIT_SPEED));
@@ -501,7 +526,7 @@ function createPlayer(x, y, animations) {
 						this.x + this.rocket12X, this.y + this.rocket1Y,
 						ROCKET1_INIT_SPEED));
 
-				this.mana -= 10;
+				this.mana -= manaCost;
 				this.actionSuccess = true;
 			} else {
 				this.actionSuccess = false;
@@ -509,54 +534,76 @@ function createPlayer(x, y, animations) {
 		},
 
 		shootRocket2: function () {
-			if (this.mana >= 20) {
+			var manaCost = 20;
+			if (this.mana >= manaCost) {
 				this.rockets2.push(createRocket2(
 						this.x + this.rocket2X, this.y + this.rocket2Y));
 
 				this.actionSuccess = true;
-				this.mana -= 20;
+				this.mana -= manaCost;
 			} else {
 				this.actionSuccess = false;
 			}
 		},
 
 		shootRocket3: function() {
-			if (this.mana >= 20) {
-
+			var manaCost = 20;
+			if (this.mana >= manaCost) {
+				this.rockets3.push(createRocket3(
+						this.x + this.rocket3X, this.y + this.rocket3Y));
 
 				this.actionSuccess = true;
-				this.mana -= 20;
+				this.mana -= manaCost;
 			} else {
 				this.actionSuccess = false;
 			}
 		},
 
 		shootLaser: function () {
-			if (this.mana >= 1) {
+			var manaCost = 1;
+			if (this.mana >= manaCost) {
 				this.laser.push(createLaser(
 						this.x + this.laser1X, this.y + this.laserY));
 				this.laser.push(createLaser(
 						this.x + this.laser2X, this.y + this.laserY));
 
 				this.actionSuccess = true;
-				this.mana -= 1;
+				this.mana -= manaCost;
 			} else {
 				this.actionSuccess = false;
 			}
 		},
 
 		repair: function() {
-			var newHp = this.hp + this.hpIncrement;
-			if (newHp <= this.maxhp) {
-				this.hp = newHp;
-				this.actionSuccess = true;
+			var manaCost = 30;
+			if (this.mana >= manaCost) {
+				var newHp = this.hp + this.hpIncrement;
+				if (newHp <= this.maxhp) {
+					this.hp = newHp;
+					this.actionSuccess = true;
+					this.mana -= manaCost;
+				} else {
+					this.actionSuccess = false;
+				}
 			} else {
 				this.actionSuccess = false;
 			}
 		},
 
-		reduceCoolDown: function() {
-			// code ...
+		reduceCoolDown: function(timestamp) {
+			var manaCost = 50;
+			if (this.mana >= manaCost) {
+				reduceActionTimeout();
+				//console.log("reduce cd");
+
+				this.actionSuccess = true;
+				this.mana -= manaCost;
+
+				this.reduceChanged = true;
+				this.reduceTimeout = timestamp;
+			} else {
+				this.actionSuccess = false;
+			}
 		},
 
 		summonTank: function() {
@@ -651,7 +698,7 @@ function createPlayer(x, y, animations) {
 							break;
 						case 6:
 							// action 6
-							this.reduceCoolDown();
+							this.reduceCoolDown(timestamp);
 							break;
 						case 7:
 							// action 7
@@ -761,6 +808,15 @@ function createPlayer(x, y, animations) {
 			var newMana = this.mana + this.manaIncrement;
 			if (newMana < this.maxmana)
 				this.mana = newMana;
+
+			// revert the cool down reduction when timeout
+			if ((timestamp - this.reduceTimeout > 10000) &&
+					this.reduceChanged) {
+				this.reduceChanged = false;
+
+				//console.log("cd change back");
+				revertActionTimout();
+			}
 		},
 
 		draw: function() {
@@ -828,6 +884,8 @@ function createEnemy(x, y) {
 	return {
 		x: null,
 		y: null,
+		width: 64,
+		height: 64,
 
 		init: function() {
 			this.x = x;
