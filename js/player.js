@@ -30,8 +30,8 @@ function createRocket1(x, y, dx) {
 		maxdy: 0.3,
 		outbound: -30,
 		damage: 2,
-		imageWidth: rocket1Image.width,
-		imageHeight: rocket1Image.height,
+		centerX: rocket1Image.width / 2,
+		centerY: rocket1Image.height / 2,
 
 		update: function(timestamp) {
 			if (this.x < enemy.x) {
@@ -55,12 +55,12 @@ function createRocket1(x, y, dx) {
 			var theta = Math.atan(-this.dx/this.dy);
 			if (this.dy == 0) theta = 0;
 			context.translate(this.x, this.y);
-			context.translate(this.imageWidth/2, this.imageHeight/2);
+			context.translate(this.centerX, this.centerY);
 			context.rotate(theta);
 			context.drawImage(rocket1Image,
-					this.imageWidth/2, this.imageHeight/2);
+					-this.centerX, -this.centerY);
 			context.rotate(-theta);
-			context.translate(-this.imageWidth/2, -this.imageHeight/2);
+			context.translate(-this.centerX, -this.centerY);
 			context.translate(-this.x, -this.y);
 		}
 	};
@@ -142,18 +142,111 @@ function createLaser(x, y) {
 	};
 }
 
+function createTankBullet(x, y, d) {
+	return {
+		x: x,
+		y: y,
+		dx: 0,
+		dy: 0,
+		direction: d,
+		speed: 6,
+
+		update: function (timestamp) {
+			this.dx = this.speed * Math.sin(this.direction);
+			this.dy = -this.speed * Math.cos(this.direction);
+
+			if (this.x >= outbound && this.x <= WIDTH - outbound)
+				this.x += this.dx;
+			if (this.y >= outbound && this.y <= HEIGHT - outbound)
+				this.y += this.dy;
+		},
+
+		draw: function () {
+			context.drawImage(tankBullet, this.x, this.y);
+		}
+	};
+}
+
 function createTank(x, y) {
 	return {
 		x: x,
 		y: y,
-		shootTimeout: 0,
+		theta: 0,
+		delta: Math.PI / 100,
+		baseCenterX: tankBase.width / 2,
+		baseCenterY: tankBase.height / 2 + 3,
+		topCenterX: tankTop.width/2,
+		topCenterY: tankTop.height - tankTop.width/2,
+		topHeight: tankTop.height,
+		tankBullets: [],
+		shootTime: -5000,
+		shootTimeout: 5000,
 
 		update: function(timestamp) {
-			// code..
+			var dx = this.x + this.topCenterX - enemy.x;
+			var dy = this.y + this.topCenterY - enemy.y;
+			var direction = 0;
+			if (dy == 0) {
+				direction = dx > 0 ? Math.PI/2 : -Math.PI/2;
+			} else {
+				direction = Math.atan(-dx / dy);
+			}
+			//console.log(direction / Math.PI * 180);
+
+			if (direction != 0) {
+				if (direction < this.theta) {
+					this.theta -= this.delta;
+				} else {
+					this.theta += this.delta;
+				}
+			}
+
+			// if cool down is up
+			// shoot one bullet
+			if (timestamp - this.shootTime >= this.shootTimeout) {
+				this.tankBullets.push(createTankBullet(
+						this.x + this.topCenterX,
+						this.y + this.topCenterY, this.theta));
+				this.shootTime = timestamp;
+			}
+
+			// update tank bullets
+			for (var i = 0; i < this.tankBullets.length ; i++) {
+				this.tankBullets[i].update(timestamp);
+			}
+
+			// remove unwanted tank bullets
+			for (var i = 0 ; i < this.tankBullets.length ; i ++) {
+				if (this.tankBullets[i].y <= outbound ||
+					this.tankBullets[i].y >= HEIGHT ||
+					this.tankBullets[i].x <= outbound ||
+					this.tankBullets[i].x >= WIDTH - outbound) {
+					this.tankBullets.splice(i, 1);
+				}
+			}
+
+			console.log(this.tankBullets.length);
 		},
 
 		draw: function () {
-			// code ...
+			// draw tank's bullets
+			for (var i = 0; i < this.tankBullets.length ; i++) {
+				if (this.tankBullets[i] != null) {
+					this.tankBullets[i].draw();
+				}
+			}
+
+			// draw tank base
+			context.drawImage(tankBase, this.x, this.y);
+			// rotate the top and draw
+			context.translate(this.x, this.y);
+			context.translate(this.baseCenterX, this.baseCenterY);
+			context.rotate(this.theta);
+			context.drawImage(tankTop,
+					-this.topCenterX, -this.topCenterY);
+			context.rotate(-this.theta);
+			context.translate(-this.baseCenterX, -this.baseCenterY);
+			context.translate(-this.x, -this.y);
 		}
 	};
 }
@@ -170,6 +263,7 @@ function createPlayer(x, y, animations) {
 		rockets2: null,
 		rockets3: null,
 		laser: null,
+		tanks: null,
 		actionTimeout: null,
 		state: null,
 		// action data
@@ -204,7 +298,7 @@ function createPlayer(x, y, animations) {
 		manaBarYPos: HEIGHT - 30,
 		manaBarLength: 150,
 		manaBarHeight: 20,
-		manaIncrement: 0.2,
+		manaIncrement: 0.5,
 
 		init: function() {
 			this.x = x;
@@ -215,6 +309,7 @@ function createPlayer(x, y, animations) {
 			this.rockets2 = [];
 			this.rockets3 = [];
 			this.laser = [];
+			this.tanks = [];
 			this.actionTimeout = [];
 			this.state = "straight";
 		},
@@ -325,7 +420,15 @@ function createPlayer(x, y, animations) {
 		},
 
 		summonTank: function() {
-			// code ...
+			var manaCost = 50;
+			if (this.mana >= manaCost) {
+				this.tanks.push(createTank(this.x, this.y));
+
+				this.actionSuccess = true;
+				this.mana -= manaCost;
+			} else {
+				this.actionSuccess = false;
+			}
 		},
 
 		update: function(timestamp) {
@@ -521,6 +624,10 @@ function createPlayer(x, y, animations) {
 			for (var i = 0; i < this.laser.length ; i++) {
 				this.laser[i].update(timestamp);
 			}
+			// update tanks
+			for (var i = 0; i < this.tanks.length ; i++) {
+				this.tanks[i].update(timestamp);
+			}
 
 			// increase mana for every update
 			var newMana = this.mana + this.manaIncrement;
@@ -566,6 +673,12 @@ function createPlayer(x, y, animations) {
 			for (var i = 0; i < this.laser.length ; i++) {
 				if (this.laser[i] != null) {
 					this.laser[i].draw();
+				}
+			}
+			// draw tanks
+			for (var i = 0; i < this.tanks.length ; i++) {
+				if (this.tanks[i] != null) {
+					this.tanks[i].draw();
 				}
 			}
 

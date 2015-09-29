@@ -23,37 +23,46 @@ var laggingEffect = 60;
 var keyState = [];
 var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8];
 
-// action timeout
+// action timeout fields
 var actionTimeout = [];
 var originalActionTimeout = [];
 var reducedActionTimeout = [];
+// constants
+var ACTION0_TIMEOUT = 90;
+var ACTION1_TIMEOUT = 500;
+var ACTION2_TIMEOUT = 3000;
+var ACTION3_TIMEOUT = 300;
+var ACTION4_TIMEOUT = 60000;
+var ACTION5_TIMEOUT = 1000;
+var ACTION6_TIMEOUT = 1000;
+var ACTION7_TIMEOUT = 30000;
 
-actionTimeout[keyBindings[0]] = 90;
-actionTimeout[keyBindings[1]] = 500;
-actionTimeout[keyBindings[2]] = 3000;
-actionTimeout[keyBindings[3]] = 300;
-actionTimeout[keyBindings[4]] = 30000;
-actionTimeout[keyBindings[5]] = 1000;
-actionTimeout[keyBindings[6]] = 2000;
-actionTimeout[keyBindings[7]] = 500;
+actionTimeout[keyBindings[0]] = ACTION0_TIMEOUT;
+actionTimeout[keyBindings[1]] = ACTION1_TIMEOUT;
+actionTimeout[keyBindings[2]] = ACTION2_TIMEOUT;
+actionTimeout[keyBindings[3]] = ACTION3_TIMEOUT;
+actionTimeout[keyBindings[4]] = ACTION4_TIMEOUT;
+actionTimeout[keyBindings[5]] = ACTION5_TIMEOUT;
+actionTimeout[keyBindings[6]] = ACTION6_TIMEOUT;
+actionTimeout[keyBindings[7]] = ACTION7_TIMEOUT;
 
-originalActionTimeout[keyBindings[0]] = 90;
-originalActionTimeout[keyBindings[1]] = 500;
-originalActionTimeout[keyBindings[2]] = 3000;
-originalActionTimeout[keyBindings[3]] = 300;
-originalActionTimeout[keyBindings[4]] = 30000;
-originalActionTimeout[keyBindings[5]] = 1000;
-originalActionTimeout[keyBindings[6]] = 2000;
-originalActionTimeout[keyBindings[7]] = 500;
+originalActionTimeout[keyBindings[0]] = ACTION0_TIMEOUT;
+originalActionTimeout[keyBindings[1]] = ACTION1_TIMEOUT;
+originalActionTimeout[keyBindings[2]] = ACTION2_TIMEOUT;
+originalActionTimeout[keyBindings[3]] = ACTION3_TIMEOUT;
+originalActionTimeout[keyBindings[4]] = ACTION4_TIMEOUT;
+originalActionTimeout[keyBindings[5]] = ACTION5_TIMEOUT;
+originalActionTimeout[keyBindings[6]] = ACTION6_TIMEOUT;
+originalActionTimeout[keyBindings[7]] = ACTION7_TIMEOUT;
 
-reducedActionTimeout[keyBindings[0]] = 45;
-reducedActionTimeout[keyBindings[1]] = 250;
-reducedActionTimeout[keyBindings[2]] = 1000;
-reducedActionTimeout[keyBindings[3]] = 100;
-reducedActionTimeout[keyBindings[4]] = 10000;
-reducedActionTimeout[keyBindings[5]] = 500;
-reducedActionTimeout[keyBindings[6]] = 1000;
-reducedActionTimeout[keyBindings[7]] = 200;
+reducedActionTimeout[keyBindings[0]] = ACTION0_TIMEOUT / 2;
+reducedActionTimeout[keyBindings[1]] = ACTION1_TIMEOUT / 2;
+reducedActionTimeout[keyBindings[2]] = ACTION2_TIMEOUT / 3;
+reducedActionTimeout[keyBindings[3]] = ACTION3_TIMEOUT / 2;
+reducedActionTimeout[keyBindings[4]] = ACTION4_TIMEOUT / 3;
+reducedActionTimeout[keyBindings[5]] = ACTION5_TIMEOUT / 2;
+reducedActionTimeout[keyBindings[6]] = ACTION6_TIMEOUT;
+reducedActionTimeout[keyBindings[7]] = ACTION7_TIMEOUT / 3;
 
 // global images resources
 var buttonTimeout = new Image();
@@ -72,6 +81,9 @@ var tankBase = new Image();
 tankBase.src = "./image/tankbase.png";
 var tankTop = new Image();
 tankTop.src = "./image/tanktop.png";
+var tankBullet = new Image();
+tankBullet.src = "./image/tankBullet.png";
+
 
 // fields
 var buttonBar = createButtonBar();
