@@ -1,3 +1,6 @@
+// constants
+var ROCKET1_INIT_DIRECTION = Math.PI / 10;
+
 // create different kinds of bullets
 function createBasicBullet(x, y) {
   return {
@@ -18,31 +21,46 @@ function createBasicBullet(x, y) {
   };
 }
 
-function createRocket1(x, y, dx) {
+function createRocket1(x, y, direction) {
   return {
     x: x,
     y: y,
-    dx: dx,
+    dx: 0,
     dy: -0.6,
     ax: 0.1,
     ay: 0.03,
     maxdx: 1,
     maxdy: 0.3,
+    direction: direction,
+    delta: Math.PI / 100,
+    maxSpeed: -6,
     outbound: -30,
     damage: 2,
     centerX: rocket1Image.width / 2,
     centerY: rocket1Image.height / 2,
 
     update: function(timestamp) {
-      if (this.x < enemy.x) {
-        this.dx += this.ax;
-        this.dy -= this.ay;
-      } else if (this.x > enemy.x) {
-        this.dx -= this.ax;
-        this.dy -= this.ay;
-      } else {
-        this.dy += this.ay;
+      var targetDirection = Math.atan((this.x-enemy.x)/(this.y-enemy.y));
+      if (targetDirection > this.direction) {
+        this.direction += this.delta;
+      } else if (targetDirection < this.direction) {
+        this.direction -= this.delta;
       }
+
+      console.log('direction: ' + this.direction);
+      this.dx = this.maxSpeed * Math.sin(this.direction);
+      this.dy = this.maxSpeed * Math.cos(this.direction);
+      //console.log('dx: ' + this.dx);
+      //console.log('dy: ' + this.dx);
+      //if (this.x < enemy.x) {
+        //this.dx += this.ax;
+        //this.dy -= this.ay;
+      //} else if (this.x > enemy.x) {
+        //this.dx -= this.ax;
+        //this.dy -= this.ay;
+      //} else {
+        //this.dy += this.ay;
+      //}
 
       if (this.y >= outbound)
         this.y += this.dy;
@@ -52,7 +70,8 @@ function createRocket1(x, y, dx) {
 
     draw: function () {
       // rotate image
-      var theta = Math.atan(-this.dx/this.dy);
+      //var theta = Math.atan(-this.dx/this.dy);
+      var theta = -this.direction;
       if (this.dy === 0) theta = 0;
       context.translate(this.x, this.y);
       context.translate(this.centerX, this.centerY);
@@ -255,6 +274,8 @@ function createPlayer(x, y, animations) {
   return {
     x: null,
     y: null,
+    width: 64,
+    height: 64,
     dx: 6,
     dy: 7,
     animations: null,
@@ -334,10 +355,10 @@ function createPlayer(x, y, animations) {
       if (this.mana >= manaCost) {
         this.rockets1.push(createRocket1(
             this.x + this.rocket11X, this.y + this.rocket1Y,
-            -ROCKET1_INIT_SPEED));
+            -ROCKET1_INIT_DIRECTION));
         this.rockets1.push(createRocket1(
             this.x + this.rocket12X, this.y + this.rocket1Y,
-            ROCKET1_INIT_SPEED));
+            ROCKET1_INIT_DIRECTION));
 
         this.mana -= manaCost;
         this.actionSuccess = true;
