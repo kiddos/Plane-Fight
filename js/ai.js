@@ -1,6 +1,3 @@
-//Todo
-//1.heat source roket
-//2.miss heat firework
 var ai_dxmax = 10;
 var ai_dymax = 20;
 function ai_phySta(x,y,dx,dy,ax,ay) {
@@ -31,18 +28,36 @@ function ai_box(p,width,height) {
 
 function ai_trajectoryAutoDodge(level){
 	return{
+		step: 0,
+		step_n: 0,
 		nextPosition: function(p,box,boxSet){
-			for(var i=0;i<player.bullets.length;i++){
-				if(player.bullets[i].y-player.bullets[i].dy*5<box.p.y+box.height){
-					var dbxrx = box.p.x - player.bullets[i].x;
-					if( dbxrx <= 0 && dbxrx >= -1*box.width){
-						if(WIDTH - p.x > p.x){
-							p.x += p.dx;
-						}
-						else{
-							p.x -= p.dx;
+			if(this.step == 0){
+				for(var i=0;i<player.bullets.length;i++){
+					if(player.bullets[i].y-player.bullets[i].dy*5<box.p.y+box.height){
+						var dbxrx = box.p.x - player.bullets[i].x;
+						if( dbxrx <= 0 && dbxrx >= -1*box.width){
+							if(WIDTH - p.x > p.x){
+								this.step = 13;
+							}
+							else{
+								this.step = -13;
+							}
 						}
 					}
+				}
+			}
+			else{
+				if(this.step == this.step_n){
+					this.step = 0;
+					this.step_n = 0;
+				}
+				else if(this.step > 0){
+					p.x += p.dx;
+					this.step_n++;
+				}
+				else{
+					p.x -= p.dx;
+					this.step_n--;
 				}
 			}
 			return p;
@@ -173,7 +188,7 @@ function ai_robot(x ,y) {
 		}
 
 	}
-	re.p = ai_phySta(x,y,3,0,0,0);
+	re.p = ai_phySta(x,y,7,0,0,0);
 	re.trajectory = ai_trajectoryAutoDodge(0);
 	re.box = ai_box(re.p,64,64);
 	return re;
