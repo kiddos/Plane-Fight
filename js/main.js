@@ -84,7 +84,10 @@ tankTop.src = "./image/tanktop.png";
 var tankBullet = new Image();
 tankBullet.src = "./image/tankBullet.png";
 
-
+var rocket1_eImage = new Image();
+rocket1_eImage.src = "./image/rocket1_enemy.png";
+var plane_enemy = new Image();
+plane_enemy.src = "./image/enemy.png";
 // fields
 var buttonBar = createButtonBar();
 var anim = createAnimation("./image/plane_anim.png",
@@ -92,7 +95,7 @@ var anim = createAnimation("./image/plane_anim.png",
 anim.init();
 var player = createPlayer(100, 100, [anim]);
 var enemy = createEnemy(450, 0);
-
+var robot = ai_robot(450, 50);
 
 // action timeout functions
 function reduceActionTimeout() {
@@ -171,12 +174,13 @@ function init() {
 function update(timestamp) {
 	player.update(timestamp);
 	buttonBar.update(timestamp);
+	robot.update();
 }
 
 function draw() {
 	context.fillStyle = mainbg;
 	context.fillRect(0, 0, WIDTH, HEIGHT);
-
+	robot.draw();
 	player.draw();
 
 	buttonBar.draw();
