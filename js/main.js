@@ -99,116 +99,116 @@ var robot = ai_robot(450, 50);
 
 // action timeout functions
 function reduceActionTimeout() {
-	for (var i = 0; i < keyBindings.length ; i++) {
-		actionTimeout[keyBindings[i]] = reducedActionTimeout[keyBindings[i]];
-	}
+  for (var i = 0; i < keyBindings.length ; i++) {
+    actionTimeout[keyBindings[i]] = reducedActionTimeout[keyBindings[i]];
+  }
 }
 
 function revertActionTimout() {
-	for (var i = 0; i < keyBindings.length ; i++) {
-		actionTimeout[keyBindings[i]] = originalActionTimeout[keyBindings[i]];
-	}
+  for (var i = 0; i < keyBindings.length ; i++) {
+    actionTimeout[keyBindings[i]] = originalActionTimeout[keyBindings[i]];
+  }
 }
 
 function createEnemy(x, y) {
-	return {
-		x: null,
-		y: null,
-		width: 64,
-		height: 64,
+  return {
+    x: null,
+    y: null,
+    width: 64,
+    height: 64,
 
-		init: function() {
-			this.x = x;
-			this.y = y;
-		},
+    init: function() {
+      this.x = x;
+      this.y = y;
+    },
 
-		update: function() {
-			// code ...
-		},
+    update: function() {
+      // code ...
+    },
 
-		draw: function() {
-			// code ...
-		}
-	};
+    draw: function() {
+      // code ...
+    }
+  };
 }
 
 function displayFPS(fps) {
-	context.fillStyle = "#FFFFFF";
-	context.fillText("FPS: " + parseFloat(fps).toFixed(2), 730, 15);
+  context.fillStyle = "#FFFFFF";
+  context.fillText("FPS: " + parseFloat(fps).toFixed(2), 730, 15);
 }
 
 function init() {
-	player.init();
-	enemy.init();
+  player.init();
+  enemy.init();
 
-	buttonBar.init();
+  buttonBar.init();
 
-	window.addEventListener("keydown", function(e) {
-		//console.log(e.keyCode);
-		switch(e.keyCode) {
-			case KEY_UP:
-			case KEY_DOWN:
-			case KEY_LEFT:
-			case KEY_RIGHT:
-				keyState[e.keyCode] = true;
-				break;
-		}
-	});
+  window.addEventListener("keydown", function(e) {
+    //console.log(e.keyCode);
+    switch(e.keyCode) {
+      case KEY_UP:
+      case KEY_DOWN:
+      case KEY_LEFT:
+      case KEY_RIGHT:
+        keyState[e.keyCode] = true;
+        break;
+    }
+  });
 
-	window.addEventListener("keyup", function(e) {
-		//console.log(e.keyCode);
-		switch(e.keyCode) {
-			case KEY_UP:
-			case KEY_DOWN:
-			case KEY_LEFT:
-			case KEY_RIGHT:
-				keyState[e.keyCode] = false;
-				break;
-			default:
-				keyState[e.keyCode] = true;
-				break;
-		}
-	});
+  window.addEventListener("keyup", function(e) {
+    //console.log(e.keyCode);
+    switch(e.keyCode) {
+      case KEY_UP:
+      case KEY_DOWN:
+      case KEY_LEFT:
+      case KEY_RIGHT:
+        keyState[e.keyCode] = false;
+      break;
+      default:
+        keyState[e.keyCode] = true;
+      break;
+    }
+  });
 }
 
 function update(timestamp) {
-	player.update(timestamp);
-	buttonBar.update(timestamp);
-	robot.update();
+  player.update(timestamp);
+  buttonBar.update(timestamp);
+  robot.update();
 }
 
 function draw() {
-	context.fillStyle = mainbg;
-	context.fillRect(0, 0, WIDTH, HEIGHT);
-	robot.draw();
-	player.draw();
+  context.fillStyle = mainbg;
+  context.fillRect(0, 0, WIDTH, HEIGHT);
+  robot.draw();
+  player.draw();
 
-	buttonBar.draw();
+  buttonBar.draw();
 }
 
 function main(arg) {
-	canvas.width = WIDTH;
-	canvas.height = HEIGHT;
+  canvas.width = WIDTH;
+  canvas.height = HEIGHT;
 
-	init();
+  init();
 
-	var frames = 0;
-	var loop = function(timestamp) {
-		update(timestamp);
-		draw();
+  var frames = 0;
+  var loop = function(timestamp) {
+    update(timestamp);
+    draw();
 
-		// display fps
-		if (shouldDisplayFPS) {
-			var fps = 1.0 * frames / timestamp * 1000;
-			frames ++;
-			if (frames < 0) {
-				frames = 0;
-			}
-			displayFPS(fps);
-		}
-		window.requestAnimationFrame(loop);
-	};
-	window.requestAnimationFrame(loop);
+    // display fps
+    if (shouldDisplayFPS) {
+      var fps = 1.0 * frames / timestamp * 1000;
+      frames ++;
+      if (frames < 0) {
+        frames = 0;
+      }
+      displayFPS(fps);
+    }
+    window.requestAnimationFrame(loop);
+  };
+  window.requestAnimationFrame(loop);
 }
 
 main();
