@@ -1,5 +1,6 @@
 var http = require('http');
 var fs = require('fs');
+var io = require('socket.io');
 
 var server = http.createServer(function(req, res) {
   if (req.method == 'GET') {
