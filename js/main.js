@@ -93,7 +93,7 @@ var buttonBar = createButtonBar();
 var anim = createAnimation("./image/plane_anim.png",
 		64, 64, 192, 128, 4, 400);
 anim.init();
-var player = createPlayer(100, 100, [anim]);
+var player = createPlayer(450, HEIGHT-300, [anim]);
 var enemy = createEnemy(450, 0);
 var robot = ai_robot(450, 50);
 
@@ -207,7 +207,7 @@ function main(arg) {
 			displayFPS(fps);
 		}
 		window.requestAnimationFrame(loop);
-	}
+	};
 	window.requestAnimationFrame(loop);
 }
 
