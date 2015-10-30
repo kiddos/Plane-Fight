@@ -1,5 +1,5 @@
-var ai_dxmax = 10;
-var ai_dymax = 20;
+var ai_dxmax = 8;
+var ai_dymax = 10;
 function ai_phySta(x,y,dx,dy,ax,ay) {
 	return{
 		x: x,
@@ -33,7 +33,7 @@ function ai_trajectoryAutoDodge(level){
 		nextPosition: function(p,box,boxSet){
 			if(this.step == 0){
 				for(var i=0;i<player.bullets.length;i++){
-					if(player.bullets[i].y-player.bullets[i].dy*5<box.p.y+box.height){
+					if(player.bullets[i].y-player.bullets[i].dy*8<box.p.y+box.height){
 						var dbxrx = box.p.x - player.bullets[i].x;
 						if( dbxrx <= 0 && dbxrx >= -1*box.width){
 							if(WIDTH - p.x > p.x){
@@ -69,7 +69,6 @@ function ai_trajectoryAuto(accurate) {
 	return{
 		accurate: accurate,
 		nextPosition: function(p,pTarget){
-			p.y += p.dy;
 			var disX = pTarget.x - p.x;
 			if (disX > 0){
 				if(disX < p.dx)
@@ -82,6 +81,19 @@ function ai_trajectoryAuto(accurate) {
 					p.x = pTarget.x;
 				else
 					p.x -= p.dx;
+			}
+			var disY = pTarget.y - p.y;
+			if (disY > 0){
+				if(disY < p.dy)
+					p.y = pTarget.y;
+				else
+					p.y += p.dy;
+			}
+			else if(disY < 0){
+				if(disY > -1*p.dy)
+					p.y = pTarget.y;
+				else
+					p.y -= p.dy;
 			}
 
 			p.dx += p.ax;
@@ -150,7 +162,7 @@ function ai_rocket1(x,y) {
 			context.drawImage(rocket1_eImage,this.p.x+32,this.p.y+35);
 		}
 	}	
-	re.p = ai_phySta(x,y,2,1,0.1,0.5);	
+	re.p = ai_phySta(x,y,2,1,0.005,0.005);	
 	re.trajectory= ai_trajectoryAuto(100);
 	return re;
 }
