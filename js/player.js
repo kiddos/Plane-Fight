@@ -298,7 +298,7 @@ function createPlayer(x, y, animations) {
 		manaBarYPos: HEIGHT - 30,
 		manaBarLength: 150,
 		manaBarHeight: 20,
-		manaIncrement: 0.5,
+		manaIncrement: 0.36,
 
 		init: function() {
 			this.x = x;

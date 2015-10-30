@@ -1,16 +1,47 @@
-var dgram = require("dgram");
+var http = require('http');
+var fs = require('fs');
 
-var socket = dgram.createSocket('udp4');
-console.log("server udp socket created");
+var server = http.createServer(function(req, res) {
+  if (req.method == 'GET') {
+    console.log('request for ' + req.url);
 
-var port = 6060;
-socket.bind(port);
-console.log("server bind to %d", port);
-
-socket.on('message', function(msg, rinfo) {
-	console.log("Receive %d bytes from %s:%d\n", msg.length, rinfo.address, rinfo.port);
+    if (req.url == '/') {
+      fs.readFile('index.html', function(err, data) {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(data, function() {
+          console.log('index.html' + ': sent');
+          res.end();
+        });
+      });
+    } else if (req.url.indexOf('js') != -1) {
+      fs.readFile('.' + req.url, function(err, data) {
+        res.writeHead(200, {'Content-Type': 'text/javascript'});
+        res.write(data, function() {
+          console.log(req.url + ': sent');
+          res.end();
+        });
+      });
+    } else if (req.url.indexOf('css') != -1) {
+      fs.readFile('.' + req.url, function(err, data) {
+        res.writeHead(200, {'Content-Type': 'text/css'});
+        res.write(data, function() {
+          console.log(req.url + ': sent');
+          res.end();
+        });
+      });
+    } else if (req.url.indexOf('png') != -1) {
+      fs.readFile('.' + req.url, function(err, data) {
+        res.writeHead(200, {'Content-Type': 'image/png'});
+        res.write(data, function() {
+          console.log(req.url + ': sent');
+          res.end();
+        });
+      });
+    }
+  }
 });
-console.log("server start listening to messages");
 
-
+console.log('server setup');
+server.listen(3000);
+console.log('server running');
 

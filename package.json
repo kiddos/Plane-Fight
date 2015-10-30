@@ -1,0 +1,8 @@
+{
+  "name": "Plane-Fight",
+  "version": "0.1.0",
+
+  "dependencies": {
+    "socket.io": "~1.2"
+  }
+}

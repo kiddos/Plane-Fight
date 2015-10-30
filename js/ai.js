@@ -1,29 +1,30 @@
 var ai_dxmax = 8;
 var ai_dymax = 10;
+
 function ai_phySta(x,y,dx,dy,ax,ay) {
-	return{
-		x: x,
-		y: y,
-		dx: dx,
-		dy: dy,
-		ax: ax,
-		ay: ay
-	}
+  return{
+    x: x,
+    y: y,
+    dx: dx,
+    dy: dy,
+    ax: ax,
+    ay: ay
+  };
 }
 
 function ai_box(p,width,height) {
-	return{
-		p: p,
-		width: width,
-		height: height,
-		collision: 0,
-		isCollision: function(boxSet){
-			return true;
-		},
-		numCollision: function(boxSet){
-			return num;
-		}	
-	}
+  return{
+    p: p,
+    width: width,
+    height: height,
+    collision: 0,
+    isCollision: function(boxSet){
+      return true;
+    },
+    numCollision: function(boxSet){
+      return num;
+    }
+  };
 }
 
 function ai_trajectoryAutoDodge(level){
@@ -105,47 +106,48 @@ function ai_trajectoryAuto(accurate) {
 }
 
 function ai_trajectoryStraight() {
-	return{
-		nextPosition: function(p){
-			p.x += p.dx;
-			p.y += p.dy;
-			p.dx += p.ax;
-			p.dy += p.ay;
-			return p;
-		}
-	}
+  return{
+    nextPosition: function(p){
+      p.x += p.dx;
+      p.y += p.dy;
+      p.dx += p.ax;
+      p.dy += p.ay;
+      return p;
+    }
+  };
 }
 
 function ai_bullet1(x,y) {
-	re = {
-		p: null,
-		trajectory: null,
-		update: function(){
-			n = this.trajectory.nextPosition(this.p);
-			//out
-			if(n.x<0 || n.y<0 || n.x>WIDTH || n.y>HEIGHT)
-				return false;
-			else{
-				this.p = n;
-				return true;
-			}
-		},
-		draw: function(){
-			context.drawImage(bulletImage,this.p.x+16,this.p.y+35);
-			context.drawImage(bulletImage,this.p.x+46,this.p.y+35);
-		}
-	}	
-	re.p = ai_phySta(x,y,0,5,0,0);	
-	re.trajectory= ai_trajectoryStraight();
-	return re;
+  re = {
+    p: null,
+    trajectory: null,
+    update: function() {
+      n = this.trajectory.nextPosition(this.p);
+      //out
+      if(n.x<0 || n.y<0 || n.x>WIDTH || n.y>HEIGHT)
+        return false;
+      else {
+        this.p = n;
+        return true;
+      }
+    },
+    draw: function(){
+      context.drawImage(bulletImage,this.p.x+16,this.p.y+35);
+      context.drawImage(bulletImage,this.p.x+46,this.p.y+35);
+    }
+  };
+  re.p = ai_phySta(x, y, 0, 5, 0, 0);
+  re.trajectory= ai_trajectoryStraight();
+  return re;
 }
 
 function ai_rocket1(x,y) {
-	re = {
-		p: null,
+  re = {
+    p: null,
 		trajectory: null,
 		update: function(){
-			n = this.trajectory.nextPosition(this.p,ai_phySta(player.x,player.y,0,0,0,0));
+	  	n = this.trajectory.nextPosition(this.p,
+		  	ai_phySta(player.x,player.y,0,0,0,0));
 			//out
 			if(n.x<0 || n.y<0 || n.x>WIDTH || n.y>HEIGHT)
 				return false;
@@ -166,7 +168,6 @@ function ai_rocket1(x,y) {
 	re.trajectory= ai_trajectoryAuto(100);
 	return re;
 }
-
 
 function ai_robot(x ,y) {
 	re ={
