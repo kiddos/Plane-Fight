@@ -216,7 +216,9 @@ function main(arg) {
       }
       displayFPS(fps);
     }
-    window.requestAnimationFrame(loop);
+    setTimeout(function() {
+      window.requestAnimationFrame(loop);
+    }, 23);
   };
   window.requestAnimationFrame(loop);
 }
