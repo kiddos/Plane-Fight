@@ -1,10 +1,12 @@
 body {
   margin: 0px;
+  background-color: #2E2E2E;
 }
 
 .container {
   width: 900px;
   margin: auto;
+  background-color: #BDBDBD;
 }
 
 .titlebar {
@@ -19,34 +21,11 @@ body {
   font-size: 1.1em;
 }
 
-#canvas {
-  display: block;
-}
-
 .footer {
   font-size: 12px;
   padding-top: 5px;
   padding-bottom: 5px;
   background-color: #BDBDBD;
   margin-top: 0px;
-}
-
-label {
-  display: inline-block;
-  margin-right: 6px;
-  padding: 2px;
-  max-width: 50px;
-  width: 100%;
-}
-
-.login {
-  font-size: 0.5em;
-  display: block;
-}
-
-input {
-  height: 0.7em;
-  margin: 3px;
-  padding: 3px;
-  background-color: #CDCDCD;
+  padding-left: 5px;
 }

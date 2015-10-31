@@ -1,8 +1,13 @@
 {
   "name": "Plane-Fight",
   "version": "0.1.0",
-
+  "description": "Javascript Game",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kiddos/Plane-Fight.git"
+  },
   "dependencies": {
-    "socket.io": "~1.2"
+    "socket.io": "~1.2",
+    "mongodb": "~2.0"
   }
 }

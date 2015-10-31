@@ -1,0 +1,18 @@
+#canvas {
+  display: block;
+}
+
+label {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px;
+  max-width: 50px;
+  width: 100%;
+}
+
+input {
+  height: 0.7em;
+  margin: 3px;
+  padding: 3px;
+  background-color: #CDCDCD;
+}
