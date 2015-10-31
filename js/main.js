@@ -13,8 +13,6 @@ var KEY_UP = 38, KEY_DOWN = 40, KEY_LEFT = 37, KEY_RIGHT = 39;
 var KEY_1 = 49, KEY_2 = 50, KEY_3 = 51, KEY_4 = 52, KEY_5 = 53, KEY_6 = 54;
 var KEY_7 = 55, KEY_8 = 56, KEY_9 = 57, KEY_0 = 48;
 var KEY_W = 87, KEY_S = 83, KEY_A = 65, KEY_D = 68;
-// rocket initial speed
-var ROCKET1_INIT_SPEED = 0.9;
 // add a lagging effect for button key press actions
 var laggingEffect = 60;
 
@@ -33,7 +31,7 @@ var ACTION1_TIMEOUT = 500;
 var ACTION2_TIMEOUT = 3000;
 var ACTION3_TIMEOUT = 300;
 var ACTION4_TIMEOUT = 60000;
-var ACTION5_TIMEOUT = 1000;
+var ACTION5_TIMEOUT = 3000;
 var ACTION6_TIMEOUT = 1000;
 var ACTION7_TIMEOUT = 30000;
 

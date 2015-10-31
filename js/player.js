@@ -1,3 +1,6 @@
+// constants
+var ROCKET1_INIT_DIRECTION = Math.PI / 10;
+
 // create different kinds of bullets
 function createBasicBullet(x, y) {
   return {
@@ -18,31 +21,31 @@ function createBasicBullet(x, y) {
   };
 }
 
-function createRocket1(x, y, dx) {
+function createRocket1(x, y, direction) {
   return {
     x: x,
     y: y,
-    dx: dx,
-    dy: -0.6,
-    ax: 0.1,
-    ay: 0.03,
-    maxdx: 1,
-    maxdy: 0.3,
+    dx: 0,
+    dy: 0,
+    direction: direction,
+    delta: Math.PI / 200,
+    maxSpeed: -6,
     outbound: -30,
     damage: 2,
-    centerX: rocket1Image.width / 2,
-    centerY: rocket1Image.height / 2,
 
     update: function(timestamp) {
-      if (this.x < enemy.x) {
-        this.dx += this.ax;
-        this.dy -= this.ay;
-      } else if (this.x > enemy.x) {
-        this.dx -= this.ax;
-        this.dy -= this.ay;
-      } else {
-        this.dy += this.ay;
+      // TODO
+      // enemy width/height variable may need to change
+      var targetDirection = Math.atan(
+          (this.x-enemy.x-enemy.width/2)/(this.y-enemy.y-enemy.height/2));
+      if (targetDirection > this.direction) {
+        this.direction += this.delta;
+      } else if (targetDirection < this.direction) {
+        this.direction -= this.delta;
       }
+
+      this.dx = this.maxSpeed * Math.sin(this.direction);
+      this.dy = this.maxSpeed * Math.cos(this.direction);
 
       if (this.y >= outbound)
         this.y += this.dy;
@@ -51,17 +54,7 @@ function createRocket1(x, y, dx) {
     },
 
     draw: function () {
-      // rotate image
-      var theta = Math.atan(-this.dx/this.dy);
-      if (this.dy === 0) theta = 0;
-      context.translate(this.x, this.y);
-      context.translate(this.centerX, this.centerY);
-      context.rotate(theta);
-      context.drawImage(rocket1Image,
-          -this.centerX, -this.centerY);
-      context.rotate(-theta);
-      context.translate(-this.centerX, -this.centerY);
-      context.translate(-this.x, -this.y);
+      drawRotation(rocket1Image, this.x, this.y, -this.direction);
     }
   };
 }
@@ -74,8 +67,6 @@ function createRocket2(x, y) {
     ay: 1,
     maxdy: 30,
     damage: 10,
-    imageWidth: rocket2Image.width,
-    imageHeight: rocket2Image.height,
 
     update: function(timestamp) {
       if (Math.abs(this.dy) <= this.maxdy)
@@ -86,29 +77,42 @@ function createRocket2(x, y) {
     },
 
     draw: function () {
-      context.drawImage(rocket2Image,
-          this.x, this.y);
+      context.drawImage(rocket2Image, this.x, this.y);
     }
   };
 }
 
-function createRocket3(x, y, dx) {
+function createRocket3(x, y) {
   return {
     x: x,
     y: y,
-    dx: 4,
-    dy: -6,
+    dx: 0,
+    dy: 0,
     damage: 30,
+    direction: 0,
+    delta: Math.PI / 100,
+    maxSpeed: -10,
     imageWidth: rocket3Image.width,
     imageHeight: rocket3Image.height,
 
     update: function(timestamp) {
+      // TODO
+      // enemy width/height variable may need to change
+      var targetDirection = Math.atan(
+          (this.x+this.imageWidth/2-enemy.x-enemy.width/2) /
+          (this.y-enemy.y-enemy.height/2));
+
+      if (targetDirection > this.direction) {
+        this.direction += this.delta;
+      } else if (targetDirection < this.direction) {
+        this.direction -= this.delta;
+      }
+
+      this.dx = this.maxSpeed * Math.sin(this.direction);
+      this.dy = this.maxSpeed * Math.cos(this.direction);
+
       if (this.x >= outbound && this.x <= WIDTH - outbound) {
-        if (this.x < enemy.x) {
-          this.x += this.dx;
-        } else if (this.x > enemy.x + enemy.width) {
-          this.x -= this.dx;
-        }
+        this.x += this.dx;
       }
 
       if (this.y >= outbound)
@@ -116,7 +120,7 @@ function createRocket3(x, y, dx) {
     },
 
     draw: function () {
-      context.drawImage(rocket3Image, this.x, this.y);
+      drawRotation(rocket3Image, this.x, this.y, -this.direction);
     }
   };
 }
@@ -179,10 +183,12 @@ function createTank(x, y) {
     topCenterY: tankTop.height - tankTop.width/2,
     topHeight: tankTop.height,
     tankBullets: [],
-    shootTime: -5000,
+    shootTime: -0,
     shootTimeout: 5000,
 
     update: function(timestamp) {
+      // TODO
+      // enemy width/height variable may need to change
       var dx = this.x + this.topCenterX - enemy.x;
       var dy = this.y + this.topCenterY - enemy.y;
       var direction = 0;
@@ -191,7 +197,6 @@ function createTank(x, y) {
       } else {
         direction = Math.atan(-dx / dy);
       }
-      //console.log(direction / Math.PI * 180);
 
       if (direction !== 0) {
         if (direction < this.theta) {
@@ -225,7 +230,7 @@ function createTank(x, y) {
         }
       }
 
-      console.log(this.tankBullets.length);
+      //console.log(this.tankBullets.length);
     },
 
     draw: function () {
@@ -255,6 +260,8 @@ function createPlayer(x, y, animations) {
   return {
     x: null,
     y: null,
+    width: 64,
+    height: 64,
     dx: 6,
     dy: 7,
     animations: null,
@@ -334,10 +341,10 @@ function createPlayer(x, y, animations) {
       if (this.mana >= manaCost) {
         this.rockets1.push(createRocket1(
             this.x + this.rocket11X, this.y + this.rocket1Y,
-            -ROCKET1_INIT_SPEED));
+            -ROCKET1_INIT_DIRECTION));
         this.rockets1.push(createRocket1(
             this.x + this.rocket12X, this.y + this.rocket1Y,
-            ROCKET1_INIT_SPEED));
+            ROCKET1_INIT_DIRECTION));
 
         this.mana -= manaCost;
         this.actionSuccess = true;
@@ -362,8 +369,8 @@ function createPlayer(x, y, animations) {
     shootRocket3: function() {
       var manaCost = 20;
       if (this.mana >= manaCost) {
-        this.rockets3.push(createRocket3(
-            this.x + this.rocket3X, this.y + this.rocket3Y));
+        this.rockets3.push(
+            createRocket3(this.x+this.rocket3X, this.y+this.rocket3Y));
 
         this.actionSuccess = true;
         this.mana -= manaCost;
