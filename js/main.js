@@ -1,31 +1,25 @@
-var canvas = document.getElementById("canvas");
-var context = canvas.getContext("2d");
-
+// canvas drawings
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
 // constants
 var WIDTH = 900;
 var HEIGHT = 690;
 var outbound = -40;
-//var mainbg = "#59DF59";
-var mainbg = "#4A4A4A";
-var shouldDisplayFPS = true;
-// key event constants
+
+// colors
+var MAIN_BG_COLOR = '#4A4A4A';
+var WHITE = '#FFFFFF';
+
+// key states and bindins
 var KEY_UP = 38, KEY_DOWN = 40, KEY_LEFT = 37, KEY_RIGHT = 39;
 var KEY_1 = 49, KEY_2 = 50, KEY_3 = 51, KEY_4 = 52, KEY_5 = 53, KEY_6 = 54;
 var KEY_7 = 55, KEY_8 = 56, KEY_9 = 57, KEY_0 = 48;
 var KEY_W = 87, KEY_S = 83, KEY_A = 65, KEY_D = 68;
 // add a lagging effect for button key press actions
-var laggingEffect = 60;
-
-
-// key states and bindins
 var keyState = [];
 var keyBindings = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8];
 
 // action timeout fields
-var actionTimeout = [];
-var originalActionTimeout = [];
-var reducedActionTimeout = [];
-// constants
 var ACTION0_TIMEOUT = 90;
 var ACTION1_TIMEOUT = 500;
 var ACTION2_TIMEOUT = 3000;
@@ -34,6 +28,10 @@ var ACTION4_TIMEOUT = 60000;
 var ACTION5_TIMEOUT = 3000;
 var ACTION6_TIMEOUT = 1000;
 var ACTION7_TIMEOUT = 30000;
+
+var actionTimeout = [];
+var originalActionTimeout = [];
+var reducedActionTimeout = [];
 
 actionTimeout[keyBindings[0]] = ACTION0_TIMEOUT;
 actionTimeout[keyBindings[1]] = ACTION1_TIMEOUT;
@@ -86,7 +84,8 @@ var rocket1_eImage = new Image();
 rocket1_eImage.src = "./image/rocket1_enemy.png";
 var plane_enemy = new Image();
 plane_enemy.src = "./image/enemy.png";
-// fields
+
+// game objects
 var buttonBar = createButtonBar();
 var anim = createAnimation("./image/plane_anim.png",
 		64, 64, 192, 128, 4, 400);
@@ -94,6 +93,15 @@ anim.init();
 var player = createPlayer(450, HEIGHT-300, [anim]);
 var enemy = createEnemy(450, 0);
 var robot = ai_robot(450, 50);
+
+// FPS
+var shouldDisplayFPS = true;
+
+// modes
+var MODE_PLAY = 'play';
+var MODE_MENU = 'menu';
+var MODE_END_GAME_STATUS = 'status';
+var mode = MODE_PLAY;
 
 // action timeout functions
 function reduceActionTimeout() {
@@ -131,8 +139,8 @@ function createEnemy(x, y) {
 }
 
 function displayFPS(fps) {
-  context.fillStyle = "#FFFFFF";
-  context.fillText("FPS: " + parseFloat(fps).toFixed(2), 730, 15);
+  context.fillStyle = WHITE;
+  context.fillText('FPS: ' + parseFloat(fps).toFixed(2), 730, 15);
 }
 
 function init() {
@@ -170,18 +178,22 @@ function init() {
 }
 
 function update(timestamp) {
-  player.update(timestamp);
-  buttonBar.update(timestamp);
-  robot.update();
+  if (mode === MODE_PLAY) {
+    player.update(timestamp);
+    buttonBar.update(timestamp);
+    robot.update();
+  }
 }
 
 function draw() {
-  context.fillStyle = mainbg;
-  context.fillRect(0, 0, WIDTH, HEIGHT);
-  robot.draw();
-  player.draw();
+  if (mode === MODE_PLAY) {
+    context.fillStyle = MAIN_BG_COLOR;
+    context.fillRect(0, 0, WIDTH, HEIGHT);
+    robot.draw();
+    player.draw();
 
-  buttonBar.draw();
+    buttonBar.draw();
+  }
 }
 
 function main(arg) {

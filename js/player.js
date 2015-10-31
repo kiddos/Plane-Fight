@@ -341,10 +341,10 @@ function createPlayer(x, y, animations) {
       if (this.mana >= manaCost) {
         this.rockets1.push(createRocket1(
             this.x + this.rocket11X, this.y + this.rocket1Y,
-            -ROCKET1_INIT_DIRECTION));
+            ROCKET1_INIT_DIRECTION));
         this.rockets1.push(createRocket1(
             this.x + this.rocket12X, this.y + this.rocket1Y,
-            ROCKET1_INIT_DIRECTION));
+            -ROCKET1_INIT_DIRECTION));
 
         this.mana -= manaCost;
         this.actionSuccess = true;
@@ -539,32 +539,14 @@ function createPlayer(x, y, animations) {
 
             // if the action is performed
             // should update all other keys timestamp
-            //this.actionTimeout[keyBindings[i]] = timestamp;
             if (this.actionSuccess) {
               for (var j = 0 ; j < keyBindings.length ; j ++) {
                 if (i == j) {
                   this.actionTimeout[keyBindings[j]] =
                     timestamp;
-                } //else {
-                //this.actionTimeout[keyBindings[j]] =
-                //timestamp -
-                //actionTimeout[keyBindings[j]] +
-                //actionTimeout[keyBindings[i]] +
-                //laggingEffect;
-                // use global cool down
-                //var newTimeout = timestamp -
-                //actionTimeout[keyBindings[j]] +
-                //this.GLOBAL_COOL_DOWN +
-                //laggingEffect;
-                //if (this.actionTimeout[keyBindings[j]] >
-                //newTimeout)
-                //if (i != 0 && j != 3)
-                //this.actionTimeout[keyBindings[j]] =
-                //newTimeout;
-                //}
+                }
               }
             }
-            //break;
           } else {
             keyState[keyBindings[i]] = false;
           }
