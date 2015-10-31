@@ -96,6 +96,7 @@ var robot = ai_robot(450, 50);
 
 // FPS
 var shouldDisplayFPS = true;
+var REST_TIME = 26;
 
 // modes
 var MODE_PLAY = 'play';
@@ -216,9 +217,11 @@ function main(arg) {
       }
       displayFPS(fps);
     }
+
     setTimeout(function() {
       window.requestAnimationFrame(loop);
-    }, 23);
+    }, REST_TIME);
+    console.log(restTime);
   };
   window.requestAnimationFrame(loop);
 }

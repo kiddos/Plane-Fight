@@ -1,5 +1,10 @@
 // constants
+var HP_BAR_COLOR = '#FF3044';
+var MANA_BAR_COLOR = '#13A8FF';
 var ROCKET1_INIT_DIRECTION = Math.PI / 10;
+var FLYING_MODE_STRAIGHT = 'straight';
+var FLYING_MODE_LEFT = 'left';
+var FLYING_MODE_RIGHT = 'right';
 
 // create different kinds of bullets
 function createBasicBullet(x, y) {
@@ -318,7 +323,7 @@ function createPlayer(x, y, animations) {
       this.laser = [];
       this.tanks = [];
       this.actionTimeout = [];
-      this.state = "straight";
+      this.state = FLYING_MODE_STRAIGHT;
     },
 
     shootBasicBullet: function() {
@@ -444,13 +449,13 @@ function createPlayer(x, y, animations) {
       // update different animations
       var currentAnimation = this.animations[0];
       switch (this.state) {
-          case "straight":
+          case FLYING_MODE_STRAIGHT:
               currentAnimation = this.animations[0];
               break;
-          case "left":
+          case FLYING_MODE_LEFT:
               currentAnimation = this.animations[0];
               break;
-          case "right":
+          case FLYING_MODE_RIGHT:
               currentAnimation = this.animations[0];
               break;
       }
@@ -462,18 +467,18 @@ function createPlayer(x, y, animations) {
         newX = this.x - this.dx;
         if (newX >= 0) {
           this.x = newX;
-          this.state = "left";
+          this.state = FLYING_MODE_LEFT;
         } else {
-          this.state = "straight";
+          this.state = FLYING_MODE_STRAIGHT;
         }
       }
       if (keyState[KEY_RIGHT]) {
         newX = this.x + this.dx;
         if (newX + currentAnimation.sw <= WIDTH) {
           this.x = newX;
-          this.state = "right";
+          this.state = FLYING_MODE_RIGHT;
         } else {
-          this.state = "straight";
+          this.state = FLYING_MODE_STRAIGHT;
         }
       }
       if (keyState[KEY_UP]) {
@@ -481,7 +486,7 @@ function createPlayer(x, y, animations) {
         if (newY >= 0) {
           this.y = newY;
         }
-        this.state = "straight";
+        this.state = FLYING_MODE_STRAIGHT;
       }
       if(keyState[KEY_DOWN]) {
         newY = this.y + this.dy;
@@ -489,7 +494,7 @@ function createPlayer(x, y, animations) {
             HEIGHT - buttonBar.height - buttonBar.padding) {
           this.y = newY;
         }
-        this.state = "straight";
+        this.state = FLYING_MODE_STRAIGHT;
       }
 
       // key actions
@@ -679,24 +684,24 @@ function createPlayer(x, y, animations) {
       // waiting for making new images
       // draw animation
       switch (this.state) {
-        case "straight":
+        case FLYING_MODE_STRAIGHT:
           this.animations[0].draw(this.x, this.y);
           break;
-        case "left":
+        case FLYING_MODE_LEFT:
           this.animations[0].draw(this.x, this.y);
           break;
-        case "right":
+        case FLYING_MODE_RIGHT:
           this.animations[0].draw(this.x, this.y);
           break;
       }
 
       // draw hp bar
-      context.fillStyle = "#FF3044";
+      context.fillStyle = HP_BAR_COLOR;
       var hpl = this.hpBarLength * this.hp / this.maxhp;
       context.fillRect(this.hpBarXPos, this.hpBarYPos,
           hpl, this.hpBarHeight);
 
-      context.fillStyle = "#13A8FF";
+      context.fillStyle = MANA_BAR_COLOR;
       var manal = this.manaBarLength * this.mana / this.maxmana;
       context.fillRect(this.manaBarXPos, this.manaBarYPos,
           manal, this.manaBarHeight);
