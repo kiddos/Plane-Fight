@@ -1,32 +1,52 @@
 body {
-	margin: 0px;
+  margin: 0px;
 }
 
 .container {
-	width: 900px;
-	margin: auto;
+  width: 900px;
+  margin: auto;
 }
 
 .titlebar {
-	text-align: center;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	background-color: #BDBDBD;
+  padding: 3px;
+  background-color: #BDBDBD;
 }
 
 .title {
-	margin-top: 0px;
-	margin-bottom: 0px;
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-size: 1.1em;
 }
 
 #canvas {
-	display: block;
+  display: block;
 }
 
 .footer {
-	font-size: 12px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	background-color: #BDBDBD;
-	margin-top: 0px;
+  font-size: 12px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #BDBDBD;
+  margin-top: 0px;
+}
+
+label {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px;
+  max-width: 50px;
+  width: 100%;
+}
+
+.login {
+  font-size: 0.5em;
+  display: block;
+}
+
+input {
+  height: 0.7em;
+  margin: 3px;
+  padding: 3px;
+  background-color: #CDCDCD;
 }

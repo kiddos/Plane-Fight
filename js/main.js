@@ -3,7 +3,7 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 // constants
 var WIDTH = 900;
-var HEIGHT = 690;
+var HEIGHT = 680;
 var outbound = -40;
 
 // colors
@@ -221,7 +221,6 @@ function main(arg) {
     setTimeout(function() {
       window.requestAnimationFrame(loop);
     }, REST_TIME);
-    console.log(restTime);
   };
   window.requestAnimationFrame(loop);
 }
