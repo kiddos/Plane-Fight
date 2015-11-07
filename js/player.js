@@ -196,6 +196,8 @@ function createTank(x, y) {
       // enemy width/height variable may need to change
       var dx = this.x + this.topCenterX - enemy.x;
       var dy = this.y + this.topCenterY - enemy.y;
+      //var dx = this.x + this.topCenterX - enemy.p.x;
+      //var dy = this.y + this.topCenterY - enemy.p.y;
       var direction = 0;
       if (dy === 0) {
         direction = dx > 0 ? Math.PI/2 : -Math.PI/2;
