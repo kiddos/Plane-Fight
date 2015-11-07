@@ -9,6 +9,7 @@
       media="screen" charset="utf-8">
   <link rel="stylesheet" href="css/register.css" type="text/css"
       media="screen" charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 </head>
 <body>
   <div class="container center">
@@ -21,10 +22,11 @@
           accept-charset="utf-8" role="form">
         <label for="username">Username: </label>
         <input type="text" name="username" value="" id="username">
+
         <label for="password">Password: </label>
-        <input type="password" name="password" value="" id="password">
+        <input type="text" name="password" value="" id="password">
         <label for="confirm">Confirm Password: </label>
-        <input type="password" name="confirm" value="" id="confirm">
+        <input type="text" name="confirm" value="" id="confirm">
         <br>
 
         <input type="checkbox" name="show" value="" id="show">
@@ -35,5 +37,8 @@
 
     <img src="image/plane.png" alt="plane" class="planeicon">
   </div>
+
+  <script type="text/javascript" charset="utf-8" src="js/register.js">
+  </script>
 </body>
 </html>
