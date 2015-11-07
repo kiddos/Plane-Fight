@@ -2,6 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var io = require('socket.io');
 
+var ROOT = '/';
+
 var LOGIN_PAGE = './login.html';
 var REGISTER_PAGE = './register.html';
 var PLAY_PAGE = './play.html';
@@ -17,7 +19,7 @@ var server = http.createServer(function(req, res) {
   if (req.method == 'GET') {
     console.log('request for ' + req.url);
 
-    if (req.url === '/') {
+    if (req.url === ROOT) {
       // default page which is the login page
       fs.readFile(LOGIN_PAGE, function(err, data) {
         res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
@@ -84,16 +86,25 @@ var server = http.createServer(function(req, res) {
   } else if (req.method == 'POST') {
     console.log('post for ' + req.url);
 
-    if (req.url === '/') {
-      var body = '';
-      req.on('data', function(data) {
-        console.log(data.toString('utf-8'));
-      });
+    // post data
+    var body = '';
+    req.on('data', function(data) {
+      console.log(data.toString('utf-8'));
+    });
 
+    if (req.url === ROOT) {
       fs.readFile(PLAY_PAGE, function(err, data) {
         res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
         res.write(data, function() {
-          console.log('index.html' + ': sent');
+          console.log(PLAY_PAGE + ': sent');
+          res.end();
+        });
+      });
+    } else if(req.url === '/register') {
+      fs.readFile(PLAY_PAGE, function(err, data) {
+        res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
+        res.write(data, function() {
+          console.log(PLAY_PAGE + ': sent');
           res.end();
         });
       });

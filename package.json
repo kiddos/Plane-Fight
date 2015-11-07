@@ -6,8 +6,10 @@
     "type": "git",
     "url": "https://github.com/kiddos/Plane-Fight.git"
   },
+  "license": "GPL-3.0",
   "dependencies": {
     "socket.io": "~1.2",
-    "mongodb": "~2.0"
+    "mongodb": "~2.0",
+    "jquery": "2.1.4"
   }
 }
