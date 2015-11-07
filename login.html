@@ -1,4 +1,6 @@
-<html lang="en" data-ng-app="">
+<!DOCTYPE html>
+
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,11 +10,13 @@
   <link rel="stylesheet" href="css/login.css" type="text/css"
       media="screen" charset="utf-8">
 </head>
+
 <body>
-  <div class="container">
+  <div class="logincontainer">
     <div class="titlebar">
       <h3 class="title">Plane Fight</h3>
     </div>
+
     <div class="login">
       <form action="/" method="post"
           accept-charset="utf-8" role="form">
@@ -22,9 +26,16 @@
         <label for="password">Password: </label>
         <input type="password" name="password" value="" id="password">
         <br>
-        <p><input type="submit" value="submit"></p>
+        <!--<div class="register">-->
+          <!--<a href="#">register</a>-->
+        <!--</div>-->
+        <a href="register.html">
+          <input type="button" value="register" id="register">
+        </a>
+        <input type="submit" value="submit">
       </form>
     </div>
+
     <img src="image/plane.png" alt="plane">
   </div>
 </body>

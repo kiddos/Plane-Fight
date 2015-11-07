@@ -1,11 +1,14 @@
-.container {
+.logincontainer {
   width: 900px;
   max-height: 300px;
   height: 100%;
   margin: auto;
-  position: relative;
+  position: absolute;
   top: 50%;
   margin-top: -150px;
+  background-color: #BDBDBD;
+  left: 50%;
+  margin-left: -450px;
 }
 
 .login {
@@ -23,9 +26,11 @@ input {
   background-color: #D8D8D8;
 }
 
-input[type='submit'] {
+input[type='submit'],
+input[type='button']{
   font-size: 0.9em;
   padding: 5px;
+  margin-top: 15px;
 }
 
 img {
@@ -36,3 +41,4 @@ img {
   left: 100%;
   margin-left: -250px;
 }
+

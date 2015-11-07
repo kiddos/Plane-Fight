@@ -3,6 +3,7 @@ var fs = require('fs');
 var io = require('socket.io');
 
 var LOGIN_PAGE = './login.html';
+var REGISTER_PAGE = './register.html';
 var PLAY_PAGE = './play.html';
 
 var CONTENT_TYPE = 'Content-Type';
@@ -10,6 +11,7 @@ var TYPE_HTML = 'text/html';
 var TYPE_CSS = 'text/css';
 var TYPE_JAVASCRIPT = 'text/javascript';
 var TYPE_PNG = 'image/png';
+var TYPE_ICO = 'image/ico';
 
 var server = http.createServer(function(req, res) {
   if (req.method == 'GET') {
@@ -29,6 +31,17 @@ var server = http.createServer(function(req, res) {
         req.url === '/login.htm') {
       // login page
       fs.readFile(LOGIN_PAGE, function(err, data) {
+        res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
+        res.write(data, function() {
+          console.log(req.url + ': sent');
+          res.end();
+        });
+      });
+    } else if (req.url === '/register' ||
+        req.url === '/register.html' ||
+        req.url === '/register.htm') {
+      // register page
+      fs.readFile(REGISTER_PAGE, function(err, data) {
         res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
         res.write(data, function() {
           console.log(req.url + ': sent');
@@ -59,6 +72,14 @@ var server = http.createServer(function(req, res) {
           res.end();
         });
       });
+    } else if (req.url === '/favicon.ico') {
+      fs.readFile('./image/plane.ico', function(err, data) {
+        res.writeHead(200, {CONTENT_TYPE: TYPE_ICO});
+        res.write(data, function() {
+          console.log(req.url + ': sent');
+          res.end();
+        });
+      });
     }
   } else if (req.method == 'POST') {
     console.log('post for ' + req.url);
@@ -66,7 +87,7 @@ var server = http.createServer(function(req, res) {
     if (req.url === '/') {
       var body = '';
       req.on('data', function(data) {
-        console.log(data);
+        console.log(data.toString('utf-8'));
       });
 
       fs.readFile(PLAY_PAGE, function(err, data) {
