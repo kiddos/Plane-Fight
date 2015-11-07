@@ -1,1 +1,38 @@
+.container {
+  width: 900px;
+  max-height: 300px;
+  height: 100%;
+  margin: auto;
+  position: relative;
+  top: 50%;
+  margin-top: -150px;
+}
 
+.login {
+  font-size: 0.8em;
+  margin: 60px;
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+  margin: 5px;
+}
+
+input {
+  background-color: #D8D8D8;
+}
+
+input[type='submit'] {
+  font-size: 0.9em;
+  padding: 5px;
+}
+
+img {
+  width: 250px;
+  height: 250px;
+  position: absolute;
+  top: 20px;
+  left: 100%;
+  margin-left: -250px;
+}

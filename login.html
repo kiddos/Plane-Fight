@@ -13,25 +13,19 @@
     <div class="titlebar">
       <h3 class="title">Plane Fight</h3>
     </div>
-    <div>
+    <div class="login">
       <form action="/" method="post"
           accept-charset="utf-8" role="form">
-        <p>Username: <input type="text" id="username"></p>
-        <p>Password: <input type="password" id="password"></p>
+        <label for="username">Username: </label>
+        <input type="text" name="username" value="" id="username">
+        <br>
+        <label for="password">Password: </label>
+        <input type="password" name="password" value="" id="password">
+        <br>
         <p><input type="submit" value="submit"></p>
       </form>
     </div>
-
-    <script type="text/javascript" charset="utf-8">
-      var username = document.getElementById("username");
-      var password = document.getElementById("password");
-      var submit = document.getElementById("submit");
-      submit.onclick = function() {
-        var u = username.value;
-        var p = password.value;
-        alert("Username: " + u + "\nPassword: " + p + "\nsubmitted");
-      };
-    </script>
+    <img src="image/plane.png" alt="plane">
   </div>
 </body>
 </html>
