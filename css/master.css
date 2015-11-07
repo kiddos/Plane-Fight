@@ -9,6 +9,16 @@ body {
   background-color: #BDBDBD;
 }
 
+.container.center {
+  position: absolute;
+  max-height: 300px;
+  height: 100%;
+  left: 50%;
+  margin-left: -450px;
+  margin-top: -150px;
+  top: 50%;
+}
+
 .titlebar {
   padding: 3px;
   background-color: #BDBDBD;
@@ -28,4 +38,24 @@ body {
   background-color: #BDBDBD;
   margin-top: 0px;
   padding-left: 5px;
+}
+
+input {
+  background-color: #D8D8D8;
+}
+
+input[type='submit'],
+input[type='button']{
+  font-size: 0.9em;
+  padding: 5px;
+  margin-top: 15px;
+}
+
+.planeicon {
+  width: 250px;
+  height: 250px;
+  position: absolute;
+  top: 20px;
+  left: 100%;
+  margin-left: -250px;
 }

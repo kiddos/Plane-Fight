@@ -1,0 +1,25 @@
+.register {
+  padding: 60px;
+  font-size: 0.8em;
+}
+
+label {
+  display: block;
+  font-size: 0.8em;
+}
+
+label[for="show"] {
+  display: inline-block;
+}
+
+input[name="username"] ~ label {
+  margin-top: 10px;
+}
+
+input[name="confirm"] + input[type="submit"]{
+  display: inline;
+}
+
+input[type="submit"] {
+  margin-left: 20px;
+}
