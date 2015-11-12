@@ -27,3 +27,8 @@ input[name="confirm"] + input[type="submit"]{
 input[type="submit"] {
   margin-left: 20px;
 }
+
+#error {
+  color: #FF0000;
+  font-size: 0.66em;
+}

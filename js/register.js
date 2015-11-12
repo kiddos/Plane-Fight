@@ -10,9 +10,12 @@ String.prototype.insert = function(text, pos) {
   return this.substring(0, pos) + text + this.substring(pos);
 };
 
+var username = document.getElementById('username');
 var password = document.getElementById('password');
 var confirmPw = document.getElementById('confirm');
 var cbshow = document.getElementById('show');
+var register = document.getElementById('register');
+
 var passwordCache = '';
 var confirmPwCache = '';
 
@@ -57,5 +60,32 @@ $(confirmPw).on('input', function() {
   else
     confirmPw.value = hideText(confirmPwCache);
   $(this).caret(cfpos+1);
+});
+
+$(register).submit(function(event) {
+  // stop the default post
+  event.preventDefault();
+
+  if (passwordCache === confirmPwCache) {
+    var posting = $.post('/register',
+      {
+        username: username.value,
+        password: passwordCache
+      }, function(data, status) {
+        console.log('status: ' + status);
+        console.log('data: ' + data);
+    });
+
+    posting.done(function(data) {
+      $('.message').show();
+      $('.register').hide();
+    });
+  } else {
+    $('#error').html('check your password entry again');
+    $(password).val = '';
+    $(confirm).val = '';
+    passwordCache = '';
+    confirmPwCache = '';
+  }
 });
 

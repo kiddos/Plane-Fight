@@ -1,6 +1,10 @@
 var http = require('http');
 var fs = require('fs');
 var io = require('socket.io');
+var mongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+
+var url = 'mongodb://localhost:27017/planefight';
 
 var ROOT = '/';
 
@@ -14,6 +18,7 @@ var TYPE_CSS = 'text/css';
 var TYPE_JAVASCRIPT = 'text/javascript';
 var TYPE_PNG = 'image/png';
 var TYPE_ICO = 'image/ico';
+
 
 var server = http.createServer(function(req, res) {
   if (req.method == 'GET') {
@@ -88,8 +93,14 @@ var server = http.createServer(function(req, res) {
 
     // post data
     var body = '';
+    var username = '';
+    var password = '';
     req.on('data', function(data) {
       console.log(data.toString('utf-8'));
+      var queryString = data.toString('utf-8');
+      var queries = queryString.split('&');
+      username = queries[0].split('=')[1];
+      password = queries[1].split('=')[1];
     });
 
     if (req.url === ROOT) {
@@ -106,6 +117,38 @@ var server = http.createServer(function(req, res) {
         res.write(data, function() {
           console.log(PLAY_PAGE + ': sent');
           res.end();
+
+          mongoClient.connect(url, function(err, db) {
+            assert.equal(null, err);
+            console.log('Connected to mongodb');
+
+            var collection = db.collection('users');
+            collection.find({username: username}).
+                toArray(function(err, entries) {
+                  if (entries.length === 0) {
+                    collection.insert(
+                    {
+                      username: username,
+                      password: password,
+                      skill1level: 1,
+                      skill2level: 1,
+                      skill3level: 1,
+                      skill4level: 1,
+                      skill5level: 1,
+                      skill6level: 1,
+                      skill7level: 1,
+                      skill8level: 1
+                    }, function(err, result) {
+                      assert.equal(err, null);
+                      console.log('user data inserted to database');
+                      console.log('closing connection');
+                      db.close();
+                    });
+                  } else {
+                    console.log('ERROR: fail to register, entry exists');
+                  }
+                });
+          });
         });
       });
     }

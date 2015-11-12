@@ -21,8 +21,7 @@
     </div>
 
     <div class="register">
-      <form action="/register" method="post"
-          accept-charset="utf-8" role="form">
+      <form action="/register" accept-charset="utf-8" id="register">
         <label for="username">Username: </label>
         <input type="text" name="username" value="" id="username">
 
@@ -34,8 +33,13 @@
 
         <input type="checkbox" name="show" value="" id="show">
         <label for="show">show password</label>
-        <input type="submit" value="submit">
+        <input type="submit" value="submit" id="submit">
+        <span id="error"></span>
       </form>
+    </div>
+
+    <div class="message" style="display:none">
+      success
     </div>
 
     <img src="image/plane.png" alt="plane" class="planeicon">
