@@ -32,3 +32,8 @@ input[type="submit"] {
   color: #FF0000;
   font-size: 0.66em;
 }
+
+.message {
+  font-size: 0.8em;
+  margin: 10px;
+}
