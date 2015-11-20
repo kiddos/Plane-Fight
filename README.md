@@ -4,10 +4,9 @@ Use nodejs for service connection.
 It is gonna be a SUPER AWESOME GAME.
 
 ### Currently working on:
-database connection
-
 ai
 
+login mechaniques
 
 ### Still need:
 menu page
