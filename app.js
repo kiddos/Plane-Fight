@@ -11,6 +11,7 @@ var ROOT = '/';
 var LOGIN_PAGE = './login.html';
 var REGISTER_PAGE = './register.html';
 var PLAY_PAGE = './play.html';
+var ERROR_PAGE = './error.html';
 
 var CONTENT_TYPE = 'Content-Type';
 var TYPE_HTML = 'text/html';
@@ -104,11 +105,66 @@ var server = http.createServer(function(req, res) {
     });
 
     if (req.url === ROOT) {
-      fs.readFile(PLAY_PAGE, function(err, data) {
-        res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
-        res.write(data, function() {
-          console.log(PLAY_PAGE + ': sent');
-          res.end();
+      // check if user exist in mongodb
+      mongoClient.connect(url, function(err, db){
+        assert.equal(null, err);
+        console.log('connect to mongodb');
+        console.log('validating user name');
+
+        // query mongodb
+        var cursor = db.collection('users').find({username: username});
+        var notSend = true;
+        cursor.each(function(err, doc){
+          console.log(doc);
+          assert.equal(null, err);
+          if (doc !== null) {
+            // login info correct
+            if (doc.password !== undefined &&
+                doc.password === password) {
+              // send the play page
+              if (notSend) {
+                notSend = false;
+                fs.readFile(PLAY_PAGE, function(err, data){
+                  assert.equal(null, err);
+
+                  res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
+                  res.write(data, function() {
+                    console.log('post for play page');
+                    console.log(PLAY_PAGE + ': sent\n');
+                    res.end();
+                  });
+                });
+              }
+            } else {
+              // send error page
+              if (notSend) {
+                notSend = false;
+                fs.readFile(ERROR_PAGE, function(err, data){
+                  res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
+                  res.write(data, function() {
+                    console.log('post for play page');
+                    console.log('login info incorrect');
+                    console.log(ERROR_PAGE + ': sent\n');
+                    res.end();
+                  });
+                });
+              }
+            }
+          } else {
+            // send error page
+            if (notSend) {
+              fs.readFile(ERROR_PAGE, function(err, data){
+                res.writeHead(200, {CONTENT_TYPE: TYPE_HTML});
+                res.write(data, function() {
+                  console.log('post for play page');
+                  console.log('login entry not found');
+                  console.log(ERROR_PAGE + ': sent\n');
+                  res.end();
+                });
+              });
+            }
+            db.close();
+          }
         });
       });
     } else if(req.url === '/register') {
